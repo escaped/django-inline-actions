@@ -1,0 +1,32 @@
+# Linux
+.*
+!.coveragerc
+!.gitignore
+!.travis.yml
+
+
+# vim
+.*.sw[a-z]
+*.un~
+Session.vim
+
+
+# Python
+*.py[co]
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+
+
+# Unit test / coverage reports
+.coverage
+.tox
+htmlcov
+
+
+# project
+*.sqlite3
+*.bak

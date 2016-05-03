@@ -1,0 +1,9 @@
+.field-render_actions > p {
+  display: none;
+}
+
+.submit_row.inline_actions input {
+  padding: 0px 5px;
+  margin: 0 5px;
+  cursor: pointer;
+}
