@@ -3,6 +3,10 @@ django-inline-actions
 =====================
 
 
+
+.. image:: https://img.shields.io/pypi/v/django-inline-actions.svg
+    :target: https://pypi.python.org/pypi/django-inline-actions
+
 .. image:: https://travis-ci.org/escaped/django-inline-actions.png?branch=master
     :target: http://travis-ci.org/escaped/django-inline-actions
     :alt: Build Status
@@ -11,6 +15,12 @@ django-inline-actions
     :target: https://coveralls.io/r/escaped/django-inline-actions
     :alt: Coverage
 
+.. image:: https://img.shields.io/pypi/pyversions/django-inline-actions.svg
+
+.. image:: https://img.shields.io/pypi/status/django-inline-actions.svg
+
+.. image:: https://img.shields.io/pypi/l/django-inline-actions.svg
+
 
 django-inline-actions adds actions to the InlineModelAdmin.
 
@@ -18,7 +28,7 @@ django-inline-actions adds actions to the InlineModelAdmin.
 Screenshot
 ==========
 
-.. image:: example.png
+.. image:: https://raw.githubusercontent.com/escaped/django-inline-actions/master/example.png
 
 
 Installation
@@ -26,7 +36,7 @@ Installation
 
 #. Install django-inline-actions ::
 
-    pip install https://github.com/escaped/django-inline-actions.git
+    pip install django-inline-actions
 
 #. Add ``inline_actions`` to your ``INSTALLED_APPS``.
 
