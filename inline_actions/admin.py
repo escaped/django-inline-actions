@@ -103,13 +103,15 @@ class InlineActionsMixin(InlineAdminCompat):
 
         fields = super(InlineActionsMixin, self).get_fields(request, obj)
         fields = list(fields)
-        fields.append('render_actions')
+        if 'render_actions' not in fields:
+            fields.append('render_actions')
         return fields
 
     def get_readonly_fields(self, request, obj=None):
         fields = super(InlineActionsMixin, self).get_readonly_fields(request, obj)
         fields = list(fields)
-        fields.append('render_actions')
+        if 'render_actions' not in fields:
+            fields.append('render_actions')
         return fields
 
     def render_actions(self, obj=None):
