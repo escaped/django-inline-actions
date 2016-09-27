@@ -150,9 +150,12 @@ add this action dynamically. ::
 Example Application
 ===================
 You can see ``django-inline-actions`` in action using the bundled test application
-``test_proj`` ::
+``test_proj``. I recommend to use a `virtualenv`. ::
 
    git clone https://github.com/escaped/django-inline-actions.git
+   cd django-inline-actions/
+   pip install Django
+   pip install -e .
    cd django-inline-actions/test_proj
    ./manage.py migrate
    ./manage.py createsuperuser
