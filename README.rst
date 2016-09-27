@@ -156,7 +156,7 @@ You can see ``django-inline-actions`` in action using the bundled test applicati
    cd django-inline-actions/
    pip install Django
    pip install -e .
-   cd django-inline-actions/test_proj
+   cd test_proj
    ./manage.py migrate
    ./manage.py createsuperuser
    ./manage.py runserver
