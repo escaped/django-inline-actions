@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+0.1.1 (27.09.2016)
+-----------------
+
+- Fixed duplication of field Actions in inlines (thanks to @torwald-sergesson)
+
+
 0.1 (09.05.2016)
 ----------------
 Initial release
