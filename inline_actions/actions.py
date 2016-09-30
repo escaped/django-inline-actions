@@ -5,36 +5,36 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class ViewAction(object):
-    actions = ['view_action']
+    inline_actions = ['view_action']
 
-    def view_action(self, request, obj, inline_obj):
+    def view_action(self, request, obj, parent_obj=None):
         """Redirect to changeform of selcted inline instance"""
         url = reverse(
             'admin:{}_{}_change'.format(
-                inline_obj._meta.app_label,
-                inline_obj._meta.model_name,
+                obj._meta.app_label,
+                obj._meta.model_name,
             ),
-            args=(inline_obj.pk,)
+            args=(obj.pk,)
         )
         return redirect(url)
     view_action.short_description = _("View")
 
 
 class DeleteAction(object):
-    def get_actions(self, request, obj=None):
-        actions = super(DeleteAction, self).get_actions(request, obj)
+    def get_inline_actions(self, request, obj=None):
+        actions = super(DeleteAction, self).get_inline_actions(request, obj)
         if self.has_delete_permission(request, obj):
             actions.append('delete_action')
         return actions
 
-    def delete_action(self, request, obj, inline_obj):
+    def delete_action(self, request, obj, parent_obj=None):
         """Remove selected inline instance if permission is sufficient"""
         if self.has_delete_permission(request):
-            inline_obj.delete()
-            messages.info(request, "`{}` deleted.".format(inline_obj))
+            obj.delete()
+            messages.info(request, "`{}` deleted.".format(obj))
     delete_action.short_description = _("Delete")
 
 
 class DefaultActionsMixin(ViewAction,
                           DeleteAction):
-    actions = []
+    inline_actions = []

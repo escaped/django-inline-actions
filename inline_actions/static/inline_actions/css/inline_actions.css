@@ -1,7 +1,8 @@
-.field-render_actions > p {
+.field-render_inline_actions > p {
   display: none;
 }
 
+#changelist table .submit_row.inline_actions input,
 .submit_row.inline_actions input {
   padding: 0px 5px;
   margin: 0 5px;
