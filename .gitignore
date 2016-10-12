@@ -3,6 +3,7 @@
 !.coveragerc
 !.gitignore
 !.travis.yml
+!.flake8
 
 
 # vim
