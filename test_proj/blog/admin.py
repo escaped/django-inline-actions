@@ -48,6 +48,7 @@ class AuthorAdmin(InlineActionsModelAdminMixin,
                   admin.ModelAdmin):
     inlines = [ArticleInline]
     list_display = ('name',)
+    inline_actions = None
 
 
 @admin.register(Article)
@@ -55,4 +56,4 @@ class ArticleAdmin(UnPublishActionsMixin,
                    ViewAction,
                    InlineActionsModelAdminMixin,
                    admin.ModelAdmin):
-    list_display = ('title', 'status', 'author', 'render_inline_actions')
+    list_display = ('title', 'status', 'author')

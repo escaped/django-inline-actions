@@ -54,6 +54,29 @@ def test_actions_available(admin_client, author):
     assert len(addview.lxml.xpath(path)) == 1
 
 
+def test_no_actions_on_None(admin_client, author):
+    """If `inline_actions=None` no actions should be visible"""
+    from ..admin import ArticleInline
+    url = reverse('admin:blog_article_changelist')
+
+    # save
+    old_inlinec_actions = ArticleInline.inline_actions
+    ArticleInline.inline_actions = None
+
+    url = reverse('admin:blog_author_change', args=(author.pk,))
+    changeview = admin_client.get(url)
+    path = ('.//div[@id="article_set-group"]//table'
+            '//thead//th[starts-with(text(), "Actions")]')
+    assert len(changeview.lxml.xpath(path)) == 0
+
+    url = reverse('admin:blog_author_add')
+    addview = admin_client.get(url)
+    assert len(addview.lxml.xpath(path)) == 0
+
+    # restore
+    ArticleInline.inline_actions = old_inlinec_actions
+
+
 def test_actions_methods_called(admin_client, mocker, article):
     """Test is all required methods are called."""
     from inline_actions.admin import InlineActionsMixin

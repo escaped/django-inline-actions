@@ -20,7 +20,7 @@ class ActionNotCallable(InlineActionException):
         self.action = action
 
 
-class InlineActionsMixin(InlineAdminCompat):
+class BaseInlineActionsMixin(InlineAdminCompat):
     INLINE_MODEL_ADMIN = 'inline'
     MODEL_ADMIN = 'admin'
 
@@ -51,19 +51,8 @@ class InlineActionsMixin(InlineAdminCompat):
 
         return actions
 
-    def get_fields(self, request, obj=None):
-        # store `request` for `get_inline_actions`
-        self._request = request
-
-        fields = super(InlineActionsMixin, self).get_fields(request, obj)
-        fields = list(fields)
-
-        if 'render_inline_actions' not in fields:
-            fields.append('render_inline_actions')
-        return fields
-
     def get_readonly_fields(self, request, obj=None):
-        fields = super(InlineActionsMixin, self).get_readonly_fields(request, obj)
+        fields = super(BaseInlineActionsMixin, self).get_readonly_fields(request, obj)
         fields = list(fields)
 
         if 'render_inline_actions' not in fields:
@@ -113,15 +102,34 @@ class InlineActionsMixin(InlineAdminCompat):
                 description,
                 css_classes,
             ))
-        # we have to add <p> tags as a workaround for invalid html
-        return '</p><div class="submit_row inline_actions">{}</div><p>'.format(
+        return '<div class="submit_row inline_actions">{}</div>'.format(
             ''.join(buttons)
         )
     render_inline_actions.short_description = _("Actions")
     render_inline_actions.allow_tags = True
 
 
-class InlineActionsModelAdminMixin(InlineActionsMixin):
+class InlineActionsMixin(BaseInlineActionsMixin):
+    def render_inline_actions(self, obj=None):
+        html = super(InlineActionsMixin, self).render_inline_actions(obj=obj)
+        # we have to add <p> tags as a workaround for invalid html
+        return '</p>{}<p>'.format(html)
+    render_inline_actions.short_description = _("Actions")
+    render_inline_actions.allow_tags = True
+
+    def get_fields(self, request, obj=None):
+        # store `request` for `get_inline_actions`
+        self._request = request
+
+        fields = super(InlineActionsMixin, self).get_fields(request, obj)
+        if self.inline_actions is not None:  # is it explicitly disabled?
+            fields = list(fields)
+            if 'render_inline_actions' not in fields:
+                fields.append('render_inline_actions')
+        return fields
+
+
+class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
     @property
     def media(self):
         media = super(InlineActionsModelAdminMixin, self).media
@@ -138,18 +146,23 @@ class InlineActionsModelAdminMixin(InlineActionsMixin):
         self._request = request
 
         fields = super(InlineActionsModelAdminMixin, self).get_list_display(request)
-        fields = list(fields)
-
-        if 'render_inline_actions' not in fields:
-            fields.append('render_inline_actions')
+        if self.inline_actions is not None:  # is it explicitly disabled?
+            fields = list(fields)
+            if 'render_inline_actions' not in fields:
+                fields.append('render_inline_actions')
         return fields
 
-    def render_inline_actions(self, obj=None):
-        html = super(InlineActionsModelAdminMixin, self).render_inline_actions(obj=obj)
-        # we don't need the workaround on the changelist view
-        return html.replace('<p>', '').replace('</p>', '')
-    render_inline_actions.short_description = _("Actions")
-    render_inline_actions.allow_tags = True
+    def get_fields(self, request, obj=None):
+        # store `request` for `get_inline_actions`
+        self._request = request
+
+        fields = super(InlineActionsModelAdminMixin, self).get_fields(request, obj=obj)
+        if not self.fields:
+            # django adds all readonly fields by default
+            # if `self.fields` is not defined we don't want to include
+            # `render_inline_actions
+            fields.remove('render_inline_actions')
+        return fields
 
     def _execute_action(self, request, model_admin, action, obj, parent_obj=None):
         """
@@ -235,6 +248,7 @@ class InlineActionsModelAdminMixin(InlineActionsMixin):
         return None
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        # handle requested action if required
         response = self._handle_action(request, object_id=object_id)
         if response:
             return response
@@ -244,6 +258,7 @@ class InlineActionsModelAdminMixin(InlineActionsMixin):
             request, object_id, form_url, extra_context)
 
     def changelist_view(self, request, extra_context=None):
+        # handle requested action if required
         response = self._handle_action(request)
         if response:
             return response

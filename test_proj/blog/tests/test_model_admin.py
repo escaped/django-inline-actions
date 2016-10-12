@@ -13,17 +13,35 @@ def test_actions_available(admin_client, article):
     assert len(changeview.lxml.xpath(path)) == 1
 
 
+def test_no_actions_on_None(admin_client, article):
+    """If `inline_actions=None` no actions should be visible"""
+    from ..admin import ArticleAdmin
+    url = reverse('admin:blog_article_changelist')
+
+    # save
+    old_inlinec_actions = ArticleAdmin.inline_actions
+    ArticleAdmin.inline_actions = None
+
+    changeview = admin_client.get(url)
+    path = ('.//table[@id="result_list"]'
+            '//thead//th//*[starts-with(text(), "Actions")]')
+    assert len(changeview.lxml.xpath(path)) == 0
+
+    # restore
+    ArticleAdmin.inline_actions = old_inlinec_actions
+
+
 def test_actions_methods_called(admin_client, mocker, article):
     """Test is all required methods are called."""
-    from inline_actions.admin import InlineActionsMixin
-    mocker.spy(InlineActionsMixin, 'render_inline_actions')
-    mocker.spy(InlineActionsMixin, 'get_inline_actions')
+    from inline_actions.admin import BaseInlineActionsMixin
+    mocker.spy(BaseInlineActionsMixin, 'render_inline_actions')
+    mocker.spy(BaseInlineActionsMixin, 'get_inline_actions')
 
     url = reverse('admin:blog_article_changelist')
     admin_client.get(url)
 
-    assert InlineActionsMixin.render_inline_actions.call_count > 0
-    assert InlineActionsMixin.get_inline_actions.call_count > 0
+    assert BaseInlineActionsMixin.render_inline_actions.call_count > 0
+    assert BaseInlineActionsMixin.get_inline_actions.call_count > 0
 
 
 @pytest.mark.parametrize('action', ['view_action', 'publish'])
@@ -88,3 +106,11 @@ def test_view_action(admin_client, mocker, article):
     assert ViewAction.view_action.call_count == 1
     article_change_url = reverse('admin:blog_article_change', args=(article.pk,))
     assert response.request.path == article_change_url
+
+
+def test_no_actions_on_changelist(admin_client, article):
+    """Test wether the actions fields is hidden by default"""
+    url = reverse('admin:blog_article_change', args=(article.pk,))
+    changelist = admin_client.get(url)
+
+    assert 'field-render_inline_actions' not in changelist.content.decode('utf8')
