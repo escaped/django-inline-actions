@@ -22,7 +22,7 @@ django-inline-actions
 .. image:: https://img.shields.io/pypi/l/django-inline-actions.svg
 
 
-django-inline-actions adds actions to the InlineModelAdmin.
+django-inline-actions adds actions to the InlineModelAdmin and ModelAdmin changelist.
 
 
 Screenshot
@@ -44,27 +44,29 @@ Installation
 Integration
 ===========
 
-Add the ``InlineActionMixin`` to your ``InlineModelAdmin`` and
-the ``InlineActionsModelAdminMixin`` to your ``ModelAdmin``.
-Each action is implemented as a method on the ``InlineModelAdmin`` and has the
-following signature ::
+Add the ``InlineActionsModelAdminMixin`` to your ``ModelAdmin``.
+If you want to have actions on your inlines, add the ``InlineActionMixin`` to your
+``InlineModelAdmin``.
+Each action is implemented as a method on the ``ModelAdmin``/``InlineModelAdmin`` and has
+the following signature ::
 
-    def action_name(self, request, obj, inline_obj)
+    def action_name(self, request, obj, parent_obj=None)
 
 #. ``request`` - current request
-#. ``obj`` - instance of the parent model
-#. ``inline_obj`` - instance on which the action was triggered
+#. ``obj`` - instance on which the action was triggered
+#. ``parent_obj`` - instance of the parent model, only set on inlines
 
 and should return ``None`` to return to the current changeform or a ``HttpResponse``.
-Finally, add your method name to the ``actions`` property.
+Finally, add your method name to the ``inline_actions`` property.
+If you want to disable the ``Actions`` column, explicitly set `inline_actions = None`.
 To add your actions dynamically, you can use the method
-``get_actions(self, request, obj=None)`` instead.
+``get_inline_actions(self, request, obj=None)`` instead.
 
 
 This module is bundled with two actions for viewing
 (``inline_actions.actions.ViewAction``) and deleting
 (``inline_actions.actions.DeleteAction``).
-Just add these classes to your ``InlineModelAdmin`` and you're done.
+Just add these classes to your admin and you're done.
 
 Example
 =======
@@ -80,7 +82,7 @@ Imagine a simple news application with the following ``admin.py``. ::
     class ArticleInline(InlineActionsMixin,
                         admin.TabularInline):
         model = Article
-        actions = []
+        inline_actions = []
 
         def has_add_permission(self):
             return False
@@ -109,22 +111,22 @@ The ``view`` action redirects to the changeform of the selected instance ::
     class ArticleInline(InlineActionsMixin,
                         admin.TabularInline):
         # ...
-        actions = ['view']
+        inline_actions = ['view']
         # ...
 
-        def view(self, request, obj, inline_obj):
+        def view(self, request, obj, parent_obj=None):
             url = reverse(
                 'admin:{}_{}_change'.format(
-                    inline_obj._meta.app_label,
-                    inline_obj._meta.model_name,
+                    obj._meta.app_label,
+                    obj._meta.model_name,
                 ),
-                args=(inline_obj.pk,)
+                args=(obj.pk,)
             )
             return redirect(url)
         view.short_description = _("View")
 
 
-Since ``unpublish`` depends on ``article.status`` we must use ``get_actions`` to
+Since ``unpublish`` depends on ``article.status`` we must use ``get_inline_actions`` to
 add this action dynamically. ::
 
     from django.contrib import admin, messages
@@ -134,8 +136,8 @@ add this action dynamically. ::
     class ArticleInline(InlineActionsMixin,
                         admin.TabularInline):
         # ...
-        def get_actions(self, request, obj=None):
-            actions = super(ArticleInline, self).get_actions(request, obj)
+        def get_inline_actions(self, request, obj=None):
+            actions = super(ArticleInline, self).get_inline_actions(request, obj)
             if obj:
                 if obj.status == Article.PUBLISHED:
                     actions.append('unpublish')
@@ -146,6 +148,11 @@ add this action dynamically. ::
             inline_obj.save()
             messages.info(request, _("Article unpublished"))
         unpublish.short_description = _("Unpublish")
+
+
+Adding `inline_actions` to the changelist works similar. See the sample project for
+further details (`test_proj/blog/admin.py`).
+
 
 Example Application
 ===================
