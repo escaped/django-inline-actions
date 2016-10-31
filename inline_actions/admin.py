@@ -42,8 +42,17 @@ class InlineActionsModelAdminMixin(object):
                 # get intance while respecting the queryset of the inline
                 inline_obj = inline.get_queryset(request).get(pk=inline_pk)
 
+                # get action
+                try:
+                    func = inline.get_action(action)
+                except AttributeError:
+                    raise NotImplementedError("Method get_action was not "
+                        "implemented in inline for model '{}'".format(
+                            inline_model
+                        )
+                    )
+
                 # execute action
-                func = getattr(inline, action, None)
                 try:
                     response = func(request, obj, inline_obj)
                 except TypeError:
@@ -74,6 +83,9 @@ class InlineActionsModelAdminMixin(object):
 
 class InlineActionsMixin(InlineAdminCompat):
     actions = []
+
+    def get_action(self, action):
+        return getattr(self, action, None)
 
     def get_actions(self, request, obj=None):
         # If self.actions is explicitly set to None that means that we don't
