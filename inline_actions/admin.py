@@ -46,11 +46,7 @@ class InlineActionsModelAdminMixin(object):
                 try:
                     func = inline.get_action(action)
                 except AttributeError:
-                    raise NotImplementedError("Method get_action was not "
-                        "implemented in inline for model '{}'".format(
-                            inline_model
-                        )
-                    )
+                    func = None
 
                 # execute action
                 try:
