@@ -1,7 +1,13 @@
 import pytest
+from django.contrib.admin.sites import AdminSite
 from django.core.urlresolvers import reverse
 
 from test_proj.blog.models import Article
+
+
+@pytest.fixture
+def admin_site():
+    return AdminSite()
 
 
 def test_actions_available(admin_client, author):
@@ -15,6 +21,39 @@ def test_actions_available(admin_client, author):
     url = reverse('admin:blog_author_add')
     addview = admin_client.get(url)
     assert len(addview.lxml.xpath(path)) == 1
+
+
+@pytest.mark.django_db
+def test_non_existing_action(admin_site, article):
+    """Test for appropriate exception, when `action` is not found."""
+    from test_proj.blog.admin import ArticleAdmin
+
+    ArticleAdmin.inline_actions = ['non_existing']
+    fake_request = {}
+
+    admin = ArticleAdmin(article, admin_site)
+    admin._request = fake_request
+
+    with pytest.raises(RuntimeError):
+        admin.render_inline_actions(article)
+
+    # reset
+    ArticleAdmin.inline_actions = []
+
+
+@pytest.mark.django_db
+def test_wrong_action_type(admin_client, article):
+    """Test for appropriate exception, when the action is not callable."""
+    from inline_actions.admin import ActionNotCallable
+    from test_proj.blog.admin import ArticleAdmin
+    admin = ArticleAdmin(article, admin_site)
+    admin.inline_actions = ['property_action']
+    admin.property_action = 'test'
+
+    fake_request = {}
+
+    with pytest.raises(ActionNotCallable):
+        admin._execute_action(fake_request, admin, 'property_action', article)
 
 
 def test_actions_methods_called(admin_client, mocker, article):
