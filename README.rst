@@ -28,7 +28,9 @@ django-inline-actions adds actions to the InlineModelAdmin and ModelAdmin change
 Screenshot
 ==========
 
-.. image:: https://raw.githubusercontent.com/escaped/django-inline-actions/master/example.png
+.. image:: https://raw.githubusercontent.com/escaped/django-inline-actions/master/example_changelist.png
+
+.. image:: https://raw.githubusercontent.com/escaped/django-inline-actions/master/example_inline.png
 
 
 Installation
