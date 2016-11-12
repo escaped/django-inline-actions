@@ -41,6 +41,38 @@ Installation
 #. Add ``inline_actions`` to your ``INSTALLED_APPS``.
 
 
+Migration to 1.0.0
+==================
+
+Version 1.0.0 adds support for the admin changelist. Since the django ``ModelAdmin``
+already has its own ``action`` handling, this release introduces **breaking changes**.
+Basically ``action`` has been renamed to ``inline_action`` in all method and property
+names.
+
+
++----------+----------------+-----------------------+
+| type     | old_name       | new_name              |
++==========+================+=======================+
+| property | actions        | inline_actions        |
++----------+----------------+-----------------------+
+| method   | get_actions    | get_inline_actions    |
++----------+----------------+-----------------------+
+| method   | render_actions | render_inline_actions |
++----------+----------------+-----------------------+
+
+
+Since an action can now be called from a ``ModelAdmin`` or an ``InlineAdmin`` the signature
+of each action has changed to ``def action_name(self, request, obj, parent_obj=None)``.
+See `Integration`_ for further details.
+
+If you do not want to use ``inline_actions`` on a changelist, you must deactivate
+its rendering explicitly ::
+
+      class Foo(InlineActionsModelAdminMixin, admin.ModelADmin):
+         inline_actions = None
+         # ...
+
+
 Integration
 ===========
 
@@ -67,6 +99,7 @@ This module is bundled with two actions for viewing
 (``inline_actions.actions.ViewAction``) and deleting
 (``inline_actions.actions.DeleteAction``).
 Just add these classes to your admin and you're done.
+
 
 Example
 =======
@@ -150,14 +183,14 @@ add this action dynamically. ::
         unpublish.short_description = _("Unpublish")
 
 
-Adding `inline_actions` to the changelist works similar. See the sample project for
-further details (`test_proj/blog/admin.py`).
+Adding ``inline_actions`` to the changelist works similar. See the sample project for
+further details (``test_proj/blog/admin.py``).
 
 
 Example Application
 ===================
 You can see ``django-inline-actions`` in action using the bundled test application
-``test_proj``. I recommend to use a `virtualenv`. ::
+``test_proj``. I recommend to use a ``virtualenv``. ::
 
    git clone https://github.com/escaped/django-inline-actions.git
    cd django-inline-actions/
