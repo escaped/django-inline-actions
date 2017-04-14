@@ -80,28 +80,49 @@ class BaseInlineActionsMixin(InlineAdminCompat):
         for action_name in self.get_inline_actions(self._request, obj):
             action_func = getattr(self, action_name, None)
             if not action_func:
-                raise RuntimeError("Could not find action `{}`".format(action_name))
-            try:
-                description = action_func.short_description
-            except AttributeError:
-                description = capfirst(action_name.replace('_', ' '))
-            try:
-                css_classes = action_func.css_classes
-            except AttributeError:
-                css_classes = ''
+                raise RuntimeError(
+                    "Could not find action `{}`".format(action_name))
 
-            # If the form is submitted, we have no information about the requested action.
+            # Add per-object label support
+            action_name = action_func.__name__
+            label_handler = getattr(
+                self, 'get_{}_label'.format(action_name), None)
+            if callable(label_handler):
+                description = label_handler(obj=obj)
+            else:
+                try:
+                    description = action_func.short_description
+                except AttributeError:
+                    description = capfirst(action_name.replace('_', ' '))
+
+            # Add per-object css classes support
+            css_handler = getattr(
+                self, 'get_{}_css'.format(action_name), None)
+            if callable(css_handler):
+                css_classes = css_handler(obj=obj)
+            else:
+                try:
+                    css_classes = action_func.css_classes
+                except AttributeError:
+                    css_classes = ''
+
+            # If the form is submitted, we have no information about the
+            # requested action.
             # Hence we need all data to be encoded using the action name.
-            action_data = [self._get_admin_type(),
-                           action_name,
-                           obj._meta.app_label,
-                           obj._meta.model_name,
-                           str(obj.pk)]
-            buttons.append('<input type="submit" name="{}" value="{}" class="{}">'.format(
-                '_action__{}'.format('__'.join(action_data)),
-                description,
-                css_classes,
-            ))
+            action_data = [
+                self._get_admin_type(),
+                action_name,
+                obj._meta.app_label,
+                obj._meta.model_name,
+                str(obj.pk)
+            ]
+            buttons.append(
+                '<input type="submit" name="{}" value="{}" class="{}">'.format(
+                    '_action__{}'.format('__'.join(action_data)),
+                    description,
+                    css_classes,
+                )
+            )
         return '<div class="submit_row inline_actions">{}</div>'.format(
             ''.join(buttons)
         )
