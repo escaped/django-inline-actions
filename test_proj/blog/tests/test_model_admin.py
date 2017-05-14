@@ -44,6 +44,34 @@ def test_actions_methods_called(admin_client, mocker, article):
     assert BaseInlineActionsMixin.get_inline_actions.call_count > 0
 
 
+def test_actions_dynamic_label_called(admin_client, mocker, article):
+    """Test that if for <method> model admin contains 'get_<method>_label
+    then this method will be called
+    """
+
+    from ..admin import TogglePublishActionsMixin
+    mocker.spy(TogglePublishActionsMixin, 'get_toggle_publish_label')
+
+    url = reverse('admin:blog_article_changelist')
+    admin_client.get(url)
+
+    assert TogglePublishActionsMixin.get_toggle_publish_label.call_count > 0
+
+
+def test_actions_dynamic_css_called(admin_client, mocker, article):
+    """Test that if for <method> model admin contains 'get_<method>_css
+    then this method will be called
+    """
+
+    from ..admin import TogglePublishActionsMixin
+    mocker.spy(TogglePublishActionsMixin, 'get_toggle_publish_css')
+
+    url = reverse('admin:blog_article_changelist')
+    admin_client.get(url)
+
+    assert TogglePublishActionsMixin.get_toggle_publish_css.call_count > 0
+
+
 @pytest.mark.parametrize('action', ['view_action', 'publish'])
 def test_actions_rendered(admin_client, article, action):
     """Test wether all action buttons are rendered."""
