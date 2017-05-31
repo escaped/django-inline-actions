@@ -6,19 +6,14 @@ django-inline-actions
 
 .. image:: https://img.shields.io/pypi/v/django-inline-actions.svg
     :target: https://pypi.python.org/pypi/django-inline-actions
-
 .. image:: https://travis-ci.org/escaped/django-inline-actions.png?branch=master
     :target: http://travis-ci.org/escaped/django-inline-actions
     :alt: Build Status
-
 .. image:: https://coveralls.io/repos/escaped/django-inline-actions/badge.png?branch=master
     :target: https://coveralls.io/r/escaped/django-inline-actions
     :alt: Coverage
-
 .. image:: https://img.shields.io/pypi/pyversions/django-inline-actions.svg
-
 .. image:: https://img.shields.io/pypi/status/django-inline-actions.svg
-
 .. image:: https://img.shields.io/pypi/l/django-inline-actions.svg
 
 
@@ -41,38 +36,6 @@ Installation
     pip install django-inline-actions
 
 #. Add ``inline_actions`` to your ``INSTALLED_APPS``.
-
-
-Migration to 1.0.0
-==================
-
-Version 1.0.0 adds support for the admin changelist. Since the django ``ModelAdmin``
-already has its own ``action`` handling, this release introduces **breaking changes**.
-Basically ``action`` has been renamed to ``inline_action`` in all method and property
-names.
-
-
-+----------+----------------+-----------------------+
-| type     | old_name       | new_name              |
-+==========+================+=======================+
-| property | actions        | inline_actions        |
-+----------+----------------+-----------------------+
-| method   | get_actions    | get_inline_actions    |
-+----------+----------------+-----------------------+
-| method   | render_actions | render_inline_actions |
-+----------+----------------+-----------------------+
-
-
-Since an action can now be called from a ``ModelAdmin`` or an ``InlineAdmin`` the signature
-of each action has changed to ``def action_name(self, request, obj, parent_obj=None)``.
-See `Integration`_ for further details.
-
-If you do not want to use ``inline_actions`` on a changelist, you must deactivate
-its rendering explicitly ::
-
-      class Foo(InlineActionsModelAdminMixin, admin.ModelADmin):
-         inline_actions = None
-         # ...
 
 
 Integration
@@ -103,8 +66,8 @@ This module is bundled with two actions for viewing
 Just add these classes to your admin and you're done.
 
 
-Additionally you can add methods to generate custom label and css classes per object.
-If you have inline action called ``action_name`` then you can define: ::
+Additionally, you can add methods to generate a custom label and css classes per object.
+If you have an inline action called ``action_name`` then you can define ::
 
     def get_action_name_label(self, obj):
         return 'some string'
@@ -116,7 +79,7 @@ If you have inline action called ``action_name`` then you can define: ::
 
 #. ``obj`` - instance on which the action was triggered
 
-Each defined method have to return string.
+Each defined method has to return a string.
 
 
 
@@ -208,8 +171,8 @@ further details (``test_proj/blog/admin.py``).
 Example 2
 =========
 
-For case above, if we want only one button, we can alternatively create single
-action ``toggle_publish`` that will be used to change publish status. ::
+If we want only one button, we can alternatively create single an
+action ``toggle_publish`` that will be used to change the publish status. ::
 
     def toggle_publish(self, request, obj, parent_obj=None):
         if obj.status == Article.DRAFT:
@@ -221,29 +184,28 @@ action ``toggle_publish`` that will be used to change publish status. ::
         status = 'unpublished' if obj.status == Article.DRAFT else 'published'
         messages.info(request, _("Article {}.".format(status)))
 
-This might leave user with ambiguous button label as it will be called ``Toggle publish``
-We can easily modify it by adding: ::
+This might leave the user with an ambiguous button label as it will be called
+``Toggle publish``. We can easily modify it by adding: ::
 
     def get_toggle_publish_label(self, obj):
         label = 'publish' if obj.status == Article.DRAFT else 'unpublish'
         return 'Toggle {}'.format(label)
 
 
-So if given object in row has ``DRAFT`` status, then button label will be
+So assuming an object in row has ``DRAFT`` status, then the button label will be
 ``Toggle publish`` and ``Toggle unpublish`` otherwise.
 
-We can go even fancier there as if we can create method that will add css classes
-for each object depend on status like: ::
+We can go even fancier when we create a method that will add css classes
+for each object depending on a status like: ::
 
 
     def get_toggle_publish_css(self, obj):
         return (
             'btn-green' if obj.status == Article.DRAFT else 'btn-red')
 
-
-And assuming that ``btn-green`` makes your button green, and ``btn-red`` makes
-button red, you can make it more eye-candy, or can use those classes
-to add some javascript logic (i.e. confirmation box)
+You can make it more eye-candy by using ``btn-green`` that makes your button green and
+``btn-red`` that makes your button red. Or zou can use those classes to add some
+javascript logic (i.e. confirmation box).
 
 
 Example Application
@@ -262,3 +224,35 @@ You can see ``django-inline-actions`` in action using the bundled test applicati
 
 Open `<http://localhost:8000/admin/>`_ in your browser and create an
 author and some articles.
+
+
+Migration to 1.0.0
+==================
+
+Version 1.0.0 adds support for the admin changelist. Since the django ``ModelAdmin``
+already has its own ``action`` handling, this release introduces **breaking changes**.
+Basically ``action`` has been renamed to ``inline_action`` in all method and property
+names.
+
+
++----------+----------------+-----------------------+
+| type     | old_name       | new_name              |
++==========+================+=======================+
+| property | actions        | inline_actions        |
++----------+----------------+-----------------------+
+| method   | get_actions    | get_inline_actions    |
++----------+----------------+-----------------------+
+| method   | render_actions | render_inline_actions |
++----------+----------------+-----------------------+
+
+
+Since an action can now be called from a ``ModelAdmin`` or an ``InlineAdmin`` the signature
+of each action has changed to ``def action_name(self, request, obj, parent_obj=None)``.
+See `Integration`_ for further details.
+
+If you do not want to use ``inline_actions`` on a changelist, you must deactivate
+its rendering explicitly ::
+
+      class Foo(InlineActionsModelAdminMixin, admin.ModelADmin):
+         inline_actions = None
+         # ...
