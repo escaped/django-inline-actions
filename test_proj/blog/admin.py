@@ -31,8 +31,36 @@ class UnPublishActionsMixin(object):
     unpublish.short_description = _("Unpublish")
 
 
+class TogglePublishActionsMixin(object):
+
+    def get_inline_actions(self, request, obj=None):
+        actions = super(TogglePublishActionsMixin, self).get_inline_actions(
+            request=request, obj=obj)
+        actions.append('toggle_publish')
+        return actions
+
+    def toggle_publish(self, request, obj, parent_obj=None):
+        if obj.status == Article.DRAFT:
+            obj.status = Article.PUBLISHED
+        else:
+            obj.status = Article.DRAFT
+
+        obj.save()
+        status = 'unpublished' if obj.status == Article.DRAFT else 'published'
+        messages.info(request, _("Article {}.".format(status)))
+
+    def get_toggle_publish_label(self, obj):
+        label = 'publish' if obj.status == Article.DRAFT else 'unpublish'
+        return 'Toggle {}'.format(label)
+
+    def get_toggle_publish_css(self, obj):
+        return (
+            'button object-tools' if obj.status == Article.DRAFT else 'default')
+
+
 class ArticleInline(DefaultActionsMixin,
                     UnPublishActionsMixin,
+                    TogglePublishActionsMixin,
                     InlineActionsMixin,
                     admin.TabularInline):
     model = Article
@@ -53,6 +81,7 @@ class AuthorAdmin(InlineActionsModelAdminMixin,
 
 @admin.register(Article)
 class ArticleAdmin(UnPublishActionsMixin,
+                   TogglePublishActionsMixin,
                    ViewAction,
                    InlineActionsModelAdminMixin,
                    admin.ModelAdmin):

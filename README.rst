@@ -103,8 +103,25 @@ This module is bundled with two actions for viewing
 Just add these classes to your admin and you're done.
 
 
-Example
-=======
+Additionally you can add methods to generate custom label and css classes per object.
+If you have inline action called ``action_name`` then you can define: ::
+
+    def get_action_name_label(self, obj):
+        return 'some string'
+
+
+    def get_action_name_css(self, obj):
+        return 'some string'
+
+
+#. ``obj`` - instance on which the action was triggered
+
+Each defined method have to return string.
+
+
+
+Example 1
+=========
 Imagine a simple news application with the following ``admin.py``. ::
 
     from django.contrib import admin
@@ -187,6 +204,46 @@ add this action dynamically. ::
 
 Adding ``inline_actions`` to the changelist works similar. See the sample project for
 further details (``test_proj/blog/admin.py``).
+
+Example 2
+=========
+
+For case above, if we want only one button, we can alternatively create single
+action ``toggle_publish`` that will be used to change publish status. ::
+
+    def toggle_publish(self, request, obj, parent_obj=None):
+        if obj.status == Article.DRAFT:
+            obj.status = Article.PUBLISHED
+        else:
+            obj.status = Article.DRAFT
+
+        obj.save()
+        status = 'unpublished' if obj.status == Article.DRAFT else 'published'
+        messages.info(request, _("Article {}.".format(status)))
+
+This might leave user with ambiguous button label as it will be called ``Toggle publish``
+We can easily modify it by adding: ::
+
+    def get_toggle_publish_label(self, obj):
+        label = 'publish' if obj.status == Article.DRAFT else 'unpublish'
+        return 'Toggle {}'.format(label)
+
+
+So if given object in row has ``DRAFT`` status, then button label will be
+``Toggle publish`` and ``Toggle unpublish`` otherwise.
+
+We can go even fancier there as if we can create method that will add css classes
+for each object depend on status like: ::
+
+
+    def get_toggle_publish_css(self, obj):
+        return (
+            'btn-green' if obj.status == Article.DRAFT else 'btn-red')
+
+
+And assuming that ``btn-green`` makes your button green, and ``btn-red`` makes
+button red, you can make it more eye-candy, or can use those classes
+to add some javascript logic (i.e. confirmation box)
 
 
 Example Application
