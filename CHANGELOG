@@ -1,7 +1,13 @@
 CHANGES
 =======
 
-1.0.0
+1.1.0 (unreleased)
+-----------------
+
+- Add support for per-object label and css classes (thanks to @DimmuR)
+
+
+1.0.0 (12.11.2016)
 -----------------
 
 - *BREAKING CHANGE* support for admin changelist
