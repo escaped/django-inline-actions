@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-1.1.0 (unreleased)
+1.1.0 (21.07.2017)
 -----------------
 
 - Add support for per-object label and css classes (thanks to @DimmuR)
