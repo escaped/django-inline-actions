@@ -29,6 +29,9 @@ setup(
     author_email='alex@relatedworks.com',
     license='BSD',
     packages=['inline_actions'],
+    install_requires=[
+        'django<1.11',
+    ],
     include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',
