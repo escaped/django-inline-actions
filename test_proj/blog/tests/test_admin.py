@@ -1,6 +1,6 @@
 import pytest
 from django.contrib.admin.sites import AdminSite
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from test_proj.blog.models import Article
 
