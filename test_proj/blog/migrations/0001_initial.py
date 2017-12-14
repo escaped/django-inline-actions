@@ -29,6 +29,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='article',
             name='author',
-            field=models.ForeignKey(to='blog.Author'),
+            field=models.ForeignKey(to='blog.Author', on_delete=models.CASCADE),
         ),
     ]
