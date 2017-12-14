@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 
@@ -123,9 +124,9 @@ class BaseInlineActionsMixin(InlineAdminCompat):
                     css_classes,
                 )
             )
-        return '<div class="submit_row inline_actions">{}</div>'.format(
+        return mark_safe('<div class="submit_row inline_actions">{}</div>'.format(
             ''.join(buttons)
-        )
+        ))
     render_inline_actions.short_description = _("Actions")
     render_inline_actions.allow_tags = True
 
@@ -134,7 +135,8 @@ class InlineActionsMixin(BaseInlineActionsMixin):
     def render_inline_actions(self, obj=None):
         html = super(InlineActionsMixin, self).render_inline_actions(obj=obj)
         # we have to add <p> tags as a workaround for invalid html
-        return '</p>{}<p>'.format(html)
+        return mark_safe('</p>{}<p>'.format(html))
+
     render_inline_actions.short_description = _("Actions")
     render_inline_actions.allow_tags = True
 
