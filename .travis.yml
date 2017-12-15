@@ -15,3 +15,10 @@ after_success:
 
 notifications:
   email: false
+
+addons:
+  apt:
+    sources:
+      - deadsnakes
+    packages:
+      - python3.5
