@@ -31,8 +31,6 @@ Screenshot
 Installation
 ============
 
-**Note**: For now only ``django<1.11`` is supported. Pull Requests are welcome!
-
 #. Install django-inline-actions ::
 
     pip install django-inline-actions
