@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+2.0.0 (unreleased)
+----------------
+
+- Add support for django 2.0
+- *BREAKING CHANGE* Drop support for python 2.x
+- *BREAKING CHANGE* Drop support for django<2.0
+
+
 1.2.0 (04.01.2018)
 -----------------
 
