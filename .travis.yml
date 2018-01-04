@@ -1,6 +1,6 @@
 language: python
 python:
-  - 3.5
+   - 3.6
 
 install:
   - pip install -U tox
@@ -12,3 +12,11 @@ after_success:
 
 notifications:
   email: false
+
+
+addons:
+  apt:
+    sources:
+      - deadsnakes
+    packages:
+      - python3.5 python3.5-dev
