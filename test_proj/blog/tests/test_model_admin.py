@@ -1,5 +1,6 @@
 import pytest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from webtest import AppError
 
 from ..models import Article
 

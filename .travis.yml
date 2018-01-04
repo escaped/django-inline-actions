@@ -1,6 +1,6 @@
 language: python
 python:
-   - 3.6
+  - 3.6
 
 install:
   - pip install -U tox
@@ -12,7 +12,6 @@ after_success:
 
 notifications:
   email: false
-
 
 addons:
   apt:

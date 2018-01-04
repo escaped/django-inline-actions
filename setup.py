@@ -30,7 +30,7 @@ setup(
     license='BSD',
     packages=['inline_actions'],
     install_requires=[
-        'django>1.7,<2.0',
+        'django>=1.11,<2.1',
     ],
     include_package_data=True,
     classifiers=[
@@ -46,5 +46,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
 )
