@@ -31,6 +31,8 @@ Screenshot
 Installation
 ============
 
+**NOTE** If you are on ``django<2.0``, you have to use `django-inline-actions<2.0``.
+
 #. Install django-inline-actions ::
 
     pip install django-inline-actions
