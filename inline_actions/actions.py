@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 
-class ViewAction(object):
+class ViewAction:
     inline_actions = ['view_action']
 
     def view_action(self, request, obj, parent_obj=None):
@@ -20,9 +20,9 @@ class ViewAction(object):
     view_action.short_description = _("View")
 
 
-class DeleteAction(object):
+class DeleteAction:
     def get_inline_actions(self, request, obj=None):
-        actions = super(DeleteAction, self).get_inline_actions(request, obj)
+        actions = super().get_inline_actions(request, obj)
         if self.has_delete_permission(request, obj):
             actions.append('delete_action')
         return actions

@@ -7,8 +7,6 @@ from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 
-from .compat import InlineAdminCompat
-
 
 class InlineActionException(Exception):
     pass
@@ -16,12 +14,12 @@ class InlineActionException(Exception):
 
 class ActionNotCallable(InlineActionException):
     def __init__(self, model_admin, action, *args, **kwargs):
-        super(ActionNotCallable, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.model_admin = model_admin
         self.action = action
 
 
-class BaseInlineActionsMixin(InlineAdminCompat):
+class BaseInlineActionsMixin:
     INLINE_MODEL_ADMIN = 'inline'
     MODEL_ADMIN = 'admin'
 
@@ -53,7 +51,7 @@ class BaseInlineActionsMixin(InlineAdminCompat):
         return actions
 
     def get_readonly_fields(self, request, obj=None):
-        fields = super(BaseInlineActionsMixin, self).get_readonly_fields(request, obj)
+        fields = super().get_readonly_fields(request, obj)
         fields = list(fields)
 
         if 'render_inline_actions' not in fields:
@@ -133,7 +131,7 @@ class BaseInlineActionsMixin(InlineAdminCompat):
 
 class InlineActionsMixin(BaseInlineActionsMixin):
     def render_inline_actions(self, obj=None):
-        html = super(InlineActionsMixin, self).render_inline_actions(obj=obj)
+        html = super().render_inline_actions(obj=obj)
         # we have to add <p> tags as a workaround for invalid html
         return mark_safe('</p>{}<p>'.format(html))
 
@@ -144,7 +142,7 @@ class InlineActionsMixin(BaseInlineActionsMixin):
         # store `request` for `get_inline_actions`
         self._request = request
 
-        fields = super(InlineActionsMixin, self).get_fields(request, obj)
+        fields = super().get_fields(request, obj)
         if self.inline_actions is not None:  # is it explicitly disabled?
             fields = list(fields)
             if 'render_inline_actions' not in fields:
@@ -155,7 +153,7 @@ class InlineActionsMixin(BaseInlineActionsMixin):
 class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
     @property
     def media(self):
-        media = super(InlineActionsModelAdminMixin, self).media
+        media = super().media
         css = {
             "all": (
                 "inline_actions/css/inline_actions.css",
@@ -168,7 +166,7 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
         # store `request` for `get_inline_actions`
         self._request = request
 
-        fields = super(InlineActionsModelAdminMixin, self).get_list_display(request)
+        fields = super().get_list_display(request)
         if self.inline_actions is not None:  # is it explicitly disabled?
             fields = list(fields)
             if 'render_inline_actions' not in fields:
@@ -179,7 +177,7 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
         # store `request` for `get_inline_actions`
         self._request = request
 
-        fields = super(InlineActionsModelAdminMixin, self).get_fields(request, obj=obj)
+        fields = super().get_fields(request, obj=obj)
         if not self.fields:
             # django adds all readonly fields by default
             # if `self.fields` is not defined we don't want to include
@@ -277,7 +275,7 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             return response
 
         # continue normally
-        return super(InlineActionsModelAdminMixin, self).changeform_view(
+        return super().changeform_view(
             request, object_id, form_url, extra_context)
 
     def changelist_view(self, request, extra_context=None):
@@ -287,5 +285,5 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             return response
 
         # continue normally
-        return super(InlineActionsModelAdminMixin, self).changelist_view(
+        return super().changelist_view(
             request, extra_context)
