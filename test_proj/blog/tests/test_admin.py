@@ -171,3 +171,11 @@ def test_delete_action(admin_client, mocker, article):
     assert response.request.path == author_url
     with pytest.raises(Article.DoesNotExist):
         Article.objects.get(pk=article.pk)
+
+
+def test_skip_rendering_actions_for_unsaved_objects(admin_client, mocker, article):
+    from test_proj.blog.admin import ArticleAdmin
+    unsaved_article = Article()
+    admin = ArticleAdmin(unsaved_article, admin_site)
+
+    assert admin.render_inline_actions(unsaved_article) == ''
