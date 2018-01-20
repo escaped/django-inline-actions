@@ -72,7 +72,7 @@ class BaseInlineActionsMixin:
         """
         Renders all defined inline actions as html.
         """
-        if not obj:
+        if not (obj and obj.pk):
             return ''
 
         buttons = []
