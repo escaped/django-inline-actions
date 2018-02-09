@@ -151,16 +151,12 @@ class InlineActionsMixin(BaseInlineActionsMixin):
 
 
 class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
-    @property
-    def media(self):
-        media = super().media
+    class Media:
         css = {
             "all": (
                 "inline_actions/css/inline_actions.css",
             )
         }
-        media.add_css(css)
-        return media
 
     def get_list_display(self, request):
         # store `request` for `get_inline_actions`
