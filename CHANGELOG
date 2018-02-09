@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+1.3.0 (09.02.2018)
+-----------------
+
+- remove deprecation warning
+- Dropped support for django 1.8 and 1.9
+
+
 1.2.1 (09.02.2018)
 -----------------
 
