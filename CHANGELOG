@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+1.2.1 (09.02.2018)
+-----------------
+
+- fix: don't show actions on unsaved inlines (thanks @tripliks)
+
+
 1.2.0 (04.01.2018)
 -----------------
 
