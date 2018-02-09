@@ -1,6 +1,7 @@
 import codecs
 import os
 import re
+
 from setuptools import setup
 
 
@@ -30,7 +31,7 @@ setup(
     license='BSD',
     packages=['inline_actions'],
     install_requires=[
-        'django>1.7,<2.0',
+        'django>=1.10,<2.0',
     ],
     include_package_data=True,
     classifiers=[
