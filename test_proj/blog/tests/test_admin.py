@@ -10,6 +10,14 @@ def admin_site():
     return AdminSite()
 
 
+def test_for_mediafiles(admin_client, author):
+    """Test weather the css is added to page."""
+    url = reverse('admin:blog_author_change', args=(author.pk,))
+    changeview = admin_client.get(url)
+    xpath_to_css = './/head/link[contains(@href, "inline_actions.css")]'
+    assert len(changeview.lxml.xpath(xpath_to_css)) == 1
+
+
 def test_actions_available(admin_client, author):
     """Test weather the action column is rendered."""
     url = reverse('admin:blog_author_change', args=(author.pk,))
