@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+2.0.2 (12.04.2018)
+----------------
+
+- fix: load css files on admin pages (thanks @tripliks)
+
+
 2.0.1 (20.01.2018)
 ----------------
 
