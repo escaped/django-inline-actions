@@ -26,6 +26,7 @@ build
 .coverage
 .tox
 htmlcov
+node_modules
 
 
 # project
