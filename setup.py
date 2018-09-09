@@ -30,7 +30,7 @@ setup(
     license='BSD',
     packages=['inline_actions'],
     install_requires=[
-        'django>=2.0,<2.1',
+        'django>=2.0',
     ],
     include_package_data=True,
     classifiers=[
