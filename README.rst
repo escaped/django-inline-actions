@@ -46,8 +46,8 @@ Integration
 Add the ``InlineActionsModelAdminMixin`` to your ``ModelAdmin``.
 If you want to have actions on your inlines, add the ``InlineActionMixin`` to your
 ``InlineModelAdmin``.
-Each action is implemented as a method on the ``ModelAdmin``/``InlineModelAdmin`` and has
-the following signature ::
+Each action is implemented as a method on the ``ModelAdmin``/``InlineModelAdmin`` and must
+have the following signature ::
 
     def action_name(self, request, obj, parent_obj=None)
 
@@ -56,8 +56,8 @@ the following signature ::
 #. ``parent_obj`` - instance of the parent model, only set on inlines
 
 and should return ``None`` to return to the current changeform or a ``HttpResponse``.
-Finally, add your method name to the ``inline_actions`` property.
-If you want to disable the ``Actions`` column, explicitly set `inline_actions = None`.
+Finally, add your method name to list of actions ``inline_actions`` defined on the corresponding ``ModelAdmin``.
+If you want to disable the ``Actions`` column, you have to explicitly set ``inline_actions = None``.
 To add your actions dynamically, you can use the method
 ``get_inline_actions(self, request, obj=None)`` instead.
 
@@ -173,8 +173,9 @@ further details (``test_proj/blog/admin.py``).
 Example 2
 =========
 
-If we want only one button, we can alternatively create single an
-action ``toggle_publish`` that will be used to change the publish status. ::
+Instead of creating separate actions for publishing and unpublishing, we might prefer
+an action, which toggles between those two states.
+``toggle_publish`` implements the behaviour described above ::
 
     def toggle_publish(self, request, obj, parent_obj=None):
         if obj.status == Article.DRAFT:
@@ -183,18 +184,23 @@ action ``toggle_publish`` that will be used to change the publish status. ::
             obj.status = Article.DRAFT
 
         obj.save()
-        status = 'unpublished' if obj.status == Article.DRAFT else 'published'
-        messages.info(request, _("Article {}.".format(status)))
+
+        if obj.status == Article.DRAFT:
+            messages.info(request, _("Article unpublished."))
+        else:
+            messages.info(request, _("Article published."))
 
 This might leave the user with an ambiguous button label as it will be called
-``Toggle publish``. We can easily modify it by adding: ::
+``Toggle publish`` regardless of the internal state.
+We can specify a dynamic label by adding a special method ``get_ACTIONNAME_label`` ::
 
     def get_toggle_publish_label(self, obj):
-        label = 'publish' if obj.status == Article.DRAFT else 'unpublish'
-        return 'Toggle {}'.format(label)
+        if obj.status == Article.DRAFT:
+            return 'Publish'
+        return 'Unpublish'
 
 
-So assuming an object in row has ``DRAFT`` status, then the button label will be
+So assuming an object in a row has ``DRAFT`` status, then the button label will be
 ``Toggle publish`` and ``Toggle unpublish`` otherwise.
 
 We can go even fancier when we create a method that will add css classes
@@ -206,7 +212,8 @@ for each object depending on a status like: ::
             'btn-green' if obj.status == Article.DRAFT else 'btn-red')
 
 You can make it more eye-candy by using ``btn-green`` that makes your button green and
-``btn-red`` that makes your button red. Or zou can use those classes to add some
+``btn-red`` that makes your button red.
+Or you can use those classes to add some
 javascript logic (i.e. confirmation box).
 
 
