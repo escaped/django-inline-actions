@@ -1,5 +1,4 @@
 import pytest
-
 from django_webtest import DjangoTestApp, WebTestMixin
 
 from test_proj.blog.models import Article, Author

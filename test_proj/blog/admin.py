@@ -2,8 +2,7 @@ from django.contrib import admin, messages
 from django.utils.translation import ugettext_lazy as _
 
 from inline_actions.actions import DefaultActionsMixin, ViewAction
-from inline_actions.admin import (InlineActionsMixin,
-                                  InlineActionsModelAdminMixin)
+from inline_actions.admin import InlineActionsMixin, InlineActionsModelAdminMixin
 
 from .models import Article, Author
 

@@ -1,6 +1,5 @@
 import pytest
 from django.urls import reverse
-from webtest import AppError
 
 from ..models import Article
 
