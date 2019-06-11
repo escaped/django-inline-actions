@@ -36,3 +36,9 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class AuthorProxy(Author):
+
+    class Meta:
+        proxy = True

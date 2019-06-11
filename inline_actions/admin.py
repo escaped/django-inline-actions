@@ -109,11 +109,13 @@ class BaseInlineActionsMixin:
             # requested action.
             # Hence we need all data to be encoded using the action name.
             action_data = [
+                # required to distinguish between multiple inlines for the same model
+                self.__class__.__name__.lower(),
                 self._get_admin_type(),
                 action_name,
                 obj._meta.app_label,
                 obj._meta.model_name,
-                str(obj.pk)
+                str(obj.pk),
             ]
             buttons.append(
                 '<input type="submit" name="{}" value="{}" class="{}">'.format(
@@ -241,7 +243,9 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
 
             # resolve action and target models
             raw_action_parts = raw_action_name.split('__')
-            admin_type, action, app_label, model_name, object_pk = raw_action_parts
+            admin_class_name, admin_type = raw_action_parts[:2]
+            action, app_label, model_name, object_pk = raw_action_parts[2:]
+
             model = apps.get_model(app_label=app_label,
                                    model_name=model_name)
             parent_obj = self.get_object(request, object_id)
@@ -254,7 +258,11 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
 
             else:
                 for inline in self.get_inline_instances(request):
-                    if inline.model != model:
+                    inline_class_name = inline.__class__.__name__.lower()
+                    matches_inline_class = inline_class_name == admin_class_name
+                    matches_model = inline.model == model
+
+                    if not matches_model or not matches_inline_class:
                         continue
                     model_admin = inline
                 obj = model_admin.get_queryset(request).get(pk=object_pk)
