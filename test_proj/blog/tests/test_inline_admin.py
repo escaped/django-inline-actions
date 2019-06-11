@@ -99,7 +99,9 @@ def test_actions_rendered(admin_client, article, action):
     url = reverse('admin:blog_author_change', args=(author.pk,))
     changeview = admin_client.get(url)
 
-    input_name = '_action__inline__{}__blog__article__{}'.format(action, article.pk)
+    input_name = (
+        '_action__articleinline__inline__{}__blog__article__{}'.format(action, article.pk)
+    )
     assert input_name in dict(changeview.form.fields)
 
 
@@ -113,10 +115,12 @@ def test_publish_action(admin_client, mocker, article):
     assert article.status == Article.DRAFT
 
     author_url = reverse('admin:blog_author_change', args=(author.pk,))
-    publish_input_name = '_action__inline__publish__blog__article__{}'.format(
-        article.pk)
-    unpublish_input_name = '_action__inline__unpublish__blog__article__{}'.format(
-        article.pk)
+    publish_input_name = (
+        '_action__articleinline__inline__publish__blog__article__{}'.format(article.pk)
+    )
+    unpublish_input_name = (
+        '_action__articleinline__inline__unpublish__blog__article__{}'.format(article.pk)
+    )
 
     # open changeform
     changeview = admin_client.get(author_url)
@@ -153,7 +157,11 @@ def test_view_action(admin_client, mocker, article):
     changeview = admin_client.get(author_url)
 
     # execute and test view action
-    input_name = '_action__inline__view_action__blog__article__{}'.format(article.pk)
+    input_name = (
+        '_action__articleinline__inline__view_action__blog__article__{}'.format(
+            article.pk,
+        )
+    )
     response = changeview.form.submit(name=input_name).follow()
     assert ViewAction.view_action.call_count == 1
     article_url = reverse('admin:blog_article_change', args=(article.pk,))
@@ -171,7 +179,11 @@ def test_delete_action_without_permission(admin_client, mocker, article):
     author_url = reverse('admin:blog_author_change', args=(author.pk,))
     changeview = admin_client.get(author_url)
 
-    input_name = '_action__inline__delete_action__blog__article__{}'.format(article.pk)
+    input_name = (
+        '_action__articleinline__inline__delete_action__blog__article__{}'.format(
+            article.pk,
+        )
+    )
     assert input_name not in dict(changeview.form.fields)
 
 
@@ -186,9 +198,36 @@ def test_delete_action(admin_client, mocker, article):
     changeview = admin_client.get(author_url)
 
     # execute and test delete action
-    input_name = '_action__inline__delete_action__blog__article__{}'.format(article.pk)
+    input_name = (
+        '_action__articleinline__inline__delete_action__blog__article__{}'.format(
+            article.pk,
+        )
+    )
     response = changeview.form.submit(name=input_name).follow()
     assert DeleteAction.delete_action.call_count == 1
     assert response.request.path == author_url
     with pytest.raises(Article.DoesNotExist):
         Article.objects.get(pk=article.pk)
+
+
+def test_handle_multiple_inlines(admin_client, mocker, article):
+    """
+    Test that we can have multiple inlines for the same model.
+    """
+    from ..admin import ArticleNoopInline
+
+    mocker.spy(ArticleNoopInline, 'noop_action')
+    author = article.author
+
+    # mock delete_permission
+    author_url = reverse('admin:blog_authorproxy_change', args=(author.pk,))
+    changeview = admin_client.get(author_url)
+
+    # run action on second inline
+    input_name = (
+        '_action__articlenoopinline__inline__noop_action__blog__article__{}'.format(
+            article.pk,
+        )
+    )
+    changeview.form.submit(name=input_name).follow()
+    assert ArticleNoopInline.noop_action.call_count == 1

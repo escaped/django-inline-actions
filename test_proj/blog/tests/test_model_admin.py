@@ -78,7 +78,9 @@ def test_actions_rendered(admin_client, article, action):
     url = reverse('admin:blog_article_changelist')
     changelist = admin_client.get(url)
 
-    input_name = '_action__admin__{}__blog__article__{}'.format(action, article.pk)
+    input_name = (
+        '_action__articleadmin__admin__{}__blog__article__{}'.format(action, article.pk)
+    )
     assert input_name in dict(changelist.form.fields)
 
 
@@ -91,9 +93,14 @@ def test_publish_action(admin_client, mocker, article):
     assert article.status == Article.DRAFT
 
     article_url = reverse('admin:blog_article_changelist')
-    publish_input_name = '_action__admin__publish__blog__article__{}'.format(article.pk)
-    unpublish_input_name = '_action__admin__unpublish__blog__article__{}'.format(
-        article.pk)
+    publish_input_name = (
+        '_action__articleadmin__admin__publish__blog__article__{}'.format(article.pk)
+    )
+    unpublish_input_name = (
+        '_action__articleadmin__admin__unpublish__blog__article__{}'.format(
+            article.pk,
+        )
+    )
 
     # open changelist
     changelist = admin_client.get(article_url)
@@ -129,7 +136,9 @@ def test_view_action(admin_client, mocker, article):
     changeview = admin_client.get(article_url)
 
     # execute and test view action
-    input_name = '_action__admin__view_action__blog__article__{}'.format(article.pk)
+    input_name = (
+        '_action__articleadmin__admin__view_action__blog__article__{}'.format(article.pk)
+    )
     response = changeview.form.submit(name=input_name).follow()
     assert ViewAction.view_action.call_count == 1
     article_change_url = reverse('admin:blog_article_change', args=(article.pk,))

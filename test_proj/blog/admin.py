@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from inline_actions.actions import DefaultActionsMixin, ViewAction
 from inline_actions.admin import InlineActionsMixin, InlineActionsModelAdminMixin
 
-from .models import Article, Author
+from .models import Article, Author, AuthorProxy
 
 
 class UnPublishActionsMixin(object):
@@ -68,6 +68,29 @@ class ArticleInline(DefaultActionsMixin,
 
     def has_add_permission(self, request):
         return False
+
+
+class ArticleNoopInline(InlineActionsMixin, admin.TabularInline):
+    model = Article
+    fields = ('title', 'status',)
+    readonly_fields = ('title', 'status',)
+
+    def get_inline_actions(self, request, obj=None):
+        actions = super(ArticleNoopInline, self).get_inline_actions(
+            request=request, obj=obj)
+        actions.append('noop_action')
+        return actions
+
+    def noop_action(self, request, obj, parent_obj=None):
+        pass
+
+
+@admin.register(AuthorProxy)
+class AuthorMultipleInlinesAdmin(InlineActionsModelAdminMixin,
+                                 admin.ModelAdmin):
+    inlines = [ArticleInline, ArticleNoopInline]
+    list_display = ('name',)
+    inline_actions = None
 
 
 @admin.register(Author)
