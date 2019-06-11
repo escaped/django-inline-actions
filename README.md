@@ -196,3 +196,45 @@ Use [`poetry`](https://poetry.eustace.io/) to run it.
     poetry run ./manage.py runserver
 
 Open [`http://localhost:8000/admin/`](http://localhost:8000/admin/) in your browser and create an author and some articles.
+
+
+## How to test your actions?
+
+There are two ways how you could write tests for your actions.
+We will use [pytest](https://docs.pytest.org/en/latest/) for the following examples.
+
+
+### Test the action itself
+
+Before we can call our action on the admin class itself, we have to instantiate the admin environment and pass it to the `ModelAdmin` together with an instance of our model.
+Therefore, we implement a fixture called `admin_site`, which is used on each test.
+
+    import pytest
+    from django.contrib.admin import AdminSite
+
+    from yourapp.module.admin import MyAdmin
+
+
+    @pytest.fixture
+    def admin_site():
+        return AdminSite()
+
+    @pytest.mark.django_db
+    def test_action_XXX(admin_site):
+        """Test action XXX"""
+        fake_request = {}  # you might need to use a RequestFactory here
+        obj = ...  # create an instance
+
+        admin = MyAdmin(obj, admin_site)
+
+        admin.render_inline_actions(article)
+        response = admin.action_XXX(fake_request, obj)
+        # assert the state of the application
+
+
+### Test the admin integration
+
+Alternatively, you can test your actions on the real Django admin page.
+You will have to log in, navigate to the corresponding admin and trigger a click on the action.
+To simplify this process you can use [django-webtest](https://github.com/django-webtest/django-webtest).
+Example can be found [here](https://github.com/escaped/django-inline-actions/blob/76b6f6b83c6d1830c2ad71512cd1e85362936dbd/test_proj/blog/tests/test_inline_admin.py#L146).
