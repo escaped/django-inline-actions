@@ -68,7 +68,7 @@ class BaseInlineActionsMixin:
             return self.INLINE_MODEL_ADMIN
         return self.MODEL_ADMIN
 
-    def render_inline_actions(self, obj=None):
+    def render_inline_actions(self, obj=None):  # NOQA: C901
         """
         Renders all defined inline actions as html.
         """

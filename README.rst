@@ -213,16 +213,16 @@ javascript logic (i.e. confirmation box).
 Example Application
 ===================
 You can see ``django-inline-actions`` in action using the bundled test application
-``test_proj``. I recommend to use a ``virtualenv``. ::
+``test_proj``. Use ``poetry`` to run it. ::
 
    git clone https://github.com/escaped/django-inline-actions.git
    cd django-inline-actions/
-   pip install Django
-   pip install -e .
+   poetry install
+   poetry run pip install Django
    cd test_proj
-   ./manage.py migrate
-   ./manage.py createsuperuser
-   ./manage.py runserver
+   poetry run ./manage.py migrate
+   poetry run ./manage.py createsuperuser
+   poetry run ./manage.py runserver
 
 Open `<http://localhost:8000/admin/>`_ in your browser and create an
 author and some articles.
