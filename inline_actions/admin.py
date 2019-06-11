@@ -192,8 +192,8 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
         func = getattr(model_admin, action, None)
         try:
             response = func(request, obj, parent_obj=parent_obj)
-        except TypeError:
-            raise ActionNotCallable(model_admin, action)
+        except TypeError as e:
+            raise ActionNotCallable(model_admin, action) from e
 
         # we should receive an HttpResponse
         if isinstance(response, HttpResponse):
