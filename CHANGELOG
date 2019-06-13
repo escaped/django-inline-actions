@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+2.2.0 (13.06.2019)
+----------------
+
+- feat: support for Django 2.2
+- feat: Support multiple inlines for the same related model
+- fix: keep original exception, when an action could not be executed
+
+
 2.1.0 (09.09.2018)
 ----------------
 
