@@ -25,6 +25,10 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+packages = [
+  { include = "inline_actions" },
+]
+
 [tool.poetry.dependencies]
 python = "^3.5"
 
