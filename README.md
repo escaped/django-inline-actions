@@ -1,6 +1,7 @@
 # django-inline-actions
 
 [![pypi](https://img.shields.io/pypi/v/django-inline-actions.svg)](https://pypi.python.org/pypi/django-inline-actions) [![Build Status](https://travis-ci.org/escaped/django-inline-actions.png?branch=master)](http://travis-ci.org/escaped/django-inline-actions) [![Coverage](https://coveralls.io/repos/escaped/django-inline-actions/badge.png?branch=master)](https://coveralls.io/r/escaped/django-inline-actions) ![python version](https://img.shields.io/pypi/pyversions/django-inline-actions.svg) ![Project status](https://img.shields.io/pypi/status/django-inline-actions.svg) ![license](https://img.shields.io/pypi/l/django-inline-actions.svg)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fescaped%2Fdjango-inline-actions.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fescaped%2Fdjango-inline-actions?ref=badge_shield)
 
 django-inline-actions adds actions to the InlineModelAdmin and ModelAdmin changelist.
 
@@ -238,3 +239,7 @@ Alternatively, you can test your actions on the real Django admin page.
 You will have to log in, navigate to the corresponding admin and trigger a click on the action.
 To simplify this process you can use [django-webtest](https://github.com/django-webtest/django-webtest).
 Example can be found [here](https://github.com/escaped/django-inline-actions/blob/76b6f6b83c6d1830c2ad71512cd1e85362936dbd/test_proj/blog/tests/test_inline_admin.py#L146).
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fescaped%2Fdjango-inline-actions.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fescaped%2Fdjango-inline-actions?ref=badge_large)
