@@ -1,9 +1,11 @@
 from django.contrib import admin, messages
+from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 
 from inline_actions.actions import DefaultActionsMixin, ViewAction
 from inline_actions.admin import InlineActionsMixin, InlineActionsModelAdminMixin
 
+from . import forms
 from .models import Article, Author, AuthorProxy
 
 
@@ -57,6 +59,32 @@ class TogglePublishActionsMixin(object):
             'button object-tools' if obj.status == Article.DRAFT else 'default')
 
 
+class ChangeTitleActionsMixin(object):
+
+    def get_inline_actions(self, request, obj=None):
+        actions = super(ChangeTitleActionsMixin, self).get_inline_actions(request, obj)
+        actions.append('change_title')
+        return actions
+
+    def change_title(self, request, obj, parent_obj=None):
+
+        # explictly check whether the submit button has been pressed
+        if '_save' in request.POST:
+            form = forms.ChangeTitleForm(request.POST, instance=obj)
+            form.save()
+            return None  # return back to list view
+        elif '_back' in request.POST:
+            return None
+        else:
+            form = forms.ChangeTitleForm(instance=obj)
+
+        return render(
+            request,
+            'change_title.html',
+            context={'form': form}
+        )
+
+
 class ArticleInline(DefaultActionsMixin,
                     UnPublishActionsMixin,
                     TogglePublishActionsMixin,
@@ -104,6 +132,7 @@ class AuthorAdmin(InlineActionsModelAdminMixin,
 @admin.register(Article)
 class ArticleAdmin(UnPublishActionsMixin,
                    TogglePublishActionsMixin,
+                   ChangeTitleActionsMixin,
                    ViewAction,
                    InlineActionsModelAdminMixin,
                    admin.ModelAdmin):
