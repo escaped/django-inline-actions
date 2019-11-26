@@ -74,7 +74,7 @@ class ChangeTitleActionsMixin(object):
             form.save()
             return None  # return back to list view
         elif '_back' in request.POST:
-            return None
+            return None  # return back to list view
         else:
             form = forms.ChangeTitleForm(instance=obj)
 
