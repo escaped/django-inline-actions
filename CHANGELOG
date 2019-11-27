@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+2.3.0 (27.09.2019)
+----------------
+
+- feat: support for intermediat forms, #25
+- feat: support for Django 2.2
+- feat: support for Python 3.8
+
+
 2.2.0 (13.06.2019)
 ----------------
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-inline-actions"
-version = "2.2.0"
+version = "2.3.0"
 description = "django-inline-actions adds actions to each row of the ModelAdmin or InlineModelAdmin."
 authors = ["Alexander Frenzel <alex@relatedworks.com>"]
 
