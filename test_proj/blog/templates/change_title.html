@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+{% load inline_action_tags %}
+
+{% block content %}
+  <form action="" method="post">
+    {% csrf_token %}
+    {% render_inline_action_fields %}
+
+    {{ form.as_p }}
+
+    <input type="submit" name="_back" value="Cancel"/>
+    <input type="submit" name="_save" value="Update"/>
+  </form>
+{% endblock %}

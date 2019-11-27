@@ -180,6 +180,65 @@ We can go even fancier when we create a method that will add css classes for eac
 You can make it more eye-candy by using `btn-green` that makes your button green and `btn-red` that makes your button red.
 Or you can use those classes to add some javascript logic (i.e. confirmation box).
 
+## Intermediate forms
+
+The current implementation for using intermediate forms involves some manual handling.
+This will be simplified in the next major release!
+
+
+In order to have an intermediate form, you must add some information about the triggered action.
+`django-inline-actions` provides a handy templatetag `render_inline_action_fields`,
+which adds these information as hidden fields to a form.
+
+```html
+{% extends "admin/base_site.html" %}
+{% load inline_action_tags %}
+
+{% block content %}
+  <form action="" method="post">
+    {% csrf_token %}
+    {% render_inline_action_fields %}
+
+    {{ form.as_p }}
+
+    <input type="submit" name="_back" value="Cancel"/>
+    <input type="submit" name="_save" value="Update"/>
+  </form>
+{% endblock %}
+```
+
+As the action does not know that an intermediate form is used, we have to include some special handling.
+In the case above we have to consider 3 cases:
+
+1. The form has been submitted and we want to redirect to the previous view.
+2. Back button has been clicked.
+3. Initial access to the intermediate page/form.
+
+The corresponding action could look like
+
+
+```python
+    def change_title(self, request, obj, parent_obj=None):
+
+        # 1. has the form been submitted?
+        if '_save' in request.POST:
+            form = forms.ChangeTitleForm(request.POST, instance=obj)
+            form.save()
+            return None  # return back to list view
+        # 2. has the back button been pressed?
+        elif '_back' in request.POST:
+            return None  # return back to list view
+        # 3. simply display the form
+        else:
+            form = forms.ChangeTitleForm(instance=obj)
+
+        return render(
+            request,
+            'change_title.html',
+            context={'form': form}
+        )
+```
+
 
 ## Example Application
 
