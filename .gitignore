@@ -4,6 +4,7 @@
 !.gitignore
 !.travis.yml
 !.flake8
+!.github
 
 
 # vim
