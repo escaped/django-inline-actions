@@ -186,7 +186,7 @@ The current implementation for using intermediate forms involves some manual han
 This will be simplified in the next major release!
 
 
-In order to have a intermediate form, you must add some information about the triggered action.
+In order to have an intermediate form, you must add some information about the triggered action.
 `django-inline-actions` provides a handy templatetag `render_inline_action_fields`,
 which adds these information as hidden fields to a form.
 
