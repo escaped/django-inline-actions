@@ -24,8 +24,8 @@ django-inline-actions adds actions to the InlineModelAdmin and ModelAdmin change
 ## Integration
 
 Add the `InlineActionsModelAdminMixin` to your `ModelAdmin`.
-If you want to have actions on your inlines, add the `InlineActionsMixin` to your `InlineModelsAdmin`.
-Each action is implemented as a method on the `ModelAdmin`/`InlineModelsAdmin` and **must have** the following signature.
+If you want to have actions on your inlines, add the `InlineActionsMixin` to your `InlineModelAdmin`.
+Each action is implemented as a method on the `ModelAdmin`/`InlineModelAdmin` and **must have** the following signature.
 
 ```python
 def action_name(self, request, obj, parent_obj=None):
