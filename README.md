@@ -195,6 +195,33 @@ def get_toggle_publish_css(self, obj):
 You can make it more eye-candy by using `btn-green` that makes your button green and `btn-red` that makes your button red.
 Or you can use those classes to add some javascript logic (i.e. confirmation box).
 
+### Tip on confirmation alerts
+
+When performing a certain critical action or ones which may not be easily reversible it's good to have a confirmation prompt before submitting the action form. To achieve this, one way would be to override `templates/admin/change_list.html` with the following.
+
+```html
+{% extends "admin/change_list.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script>
+        (function() {
+            document.addEventListener("DOMContentLoaded", function(event) {
+                let inline_actions = document.querySelectorAll(".inline_actions input");
+                for (var i=0; i < inline_actions.length; i++) {
+                    inline_actions[i].addEventListener("click", function(e) {
+                        if(!confirm("Do you really want to " + e.target.value + "?")) {
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
+{% endblock %}
+```
+If a staff user has clicked any inline action accidentally, they can safely click no in the confirmation prompt & the inline action form would not be submitted.
+
 ## Intermediate forms
 
 The current implementation for using intermediate forms involves some manual handling.
