@@ -1,0 +1,19 @@
+{
+    "template": "https://github.com/escaped/cookiecutter-pypackage.git",
+    "commit": "78c5496a422a0047307d337f970c73f01dd9e392",
+    "context": {
+        "cookiecutter": {
+            "author": "Alexander Frenzel",
+            "author_email": "alex@relatedworks.com",
+            "github_username": "escaped",
+            "project_name": "django-inline-actions",
+            "project_slug": "django_inline_actions",
+            "short_description": "django-inline-actions adds actions to each row of the ModelAdmin or InlineModelAdmin.",
+            "version": "2.3.0",
+            "line_length": "88",
+            "uses_django": "n",
+            "_template": "https://github.com/escaped/cookiecutter-pypackage.git"
+        }
+    },
+    "directory": null
+}

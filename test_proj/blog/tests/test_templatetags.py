@@ -16,11 +16,15 @@ def test_mulitple_actions_are_triggered(rf):
     with pytest.raises(RuntimeError) as exc_info:
         render_inline_action_fields(context)
     exception = exc_info.value
-    assert str(exception) == "Multiple inline actions have been triggered simultaneously."
+    assert (
+        str(exception) == "Multiple inline actions have been triggered simultaneously."
+    )
 
 
 def test_no_action_is_triggered(rf):
-    request = rf.post('/some/url/',)
+    request = rf.post(
+        '/some/url/',
+    )
     context = {'request': request}
 
     with pytest.raises(RuntimeError) as exc_info:
@@ -30,15 +34,15 @@ def test_no_action_is_triggered(rf):
 
 
 def test_render_action(rf):
-    ACTION_NAME = '_action__admin__NAME1__blog__blog__1'
+    action_name = '_action__admin__NAME1__blog__blog__1'
     request = rf.post(
         '/some/url/',
         data={
-            '{}'.format(ACTION_NAME): "",
+            '{}'.format(action_name): "",
         },
     )
     context = {'request': request}
 
     content = render_inline_action_fields(context)
-    expected_content = '<input type="hidden" name="{}" value="">'.format(ACTION_NAME)
+    expected_content = '<input type="hidden" name="{}" value="">'.format(action_name)
     assert content == expected_content

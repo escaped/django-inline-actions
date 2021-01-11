@@ -1,3 +1,5 @@
+from typing import Callable, List, Optional, Union
+
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -5,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class ViewAction:
-    inline_actions = ['view_action']
+    inline_actions: Optional[List[Union[str, Callable]]] = ['view_action']
 
     def view_action(self, request, obj, parent_obj=None):
         """Redirect to changeform of selcted inline instance"""
@@ -14,10 +16,11 @@ class ViewAction:
                 obj._meta.app_label,
                 obj._meta.model_name,
             ),
-            args=(obj.pk,)
+            args=(obj.pk,),
         )
         return redirect(url)
-    view_action.short_description = _("View")
+
+    view_action.short_description = _("View")  # type: ignore
 
 
 class DeleteAction:
@@ -32,9 +35,9 @@ class DeleteAction:
         if self.has_delete_permission(request):
             obj.delete()
             messages.info(request, "`{}` deleted.".format(obj))
-    delete_action.short_description = _("Delete")
+
+    delete_action.short_description = _("Delete")  # type: ignore
 
 
-class DefaultActionsMixin(ViewAction,
-                          DeleteAction):
-    inline_actions = []
+class DefaultActionsMixin(ViewAction, DeleteAction):
+    inline_actions: Optional[List[Union[str, Callable]]] = []

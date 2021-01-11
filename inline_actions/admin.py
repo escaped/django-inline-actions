@@ -1,3 +1,5 @@
+from typing import Callable, List, Optional, Union
+
 from django.apps import apps
 from django.contrib import admin
 from django.http import HttpResponse
@@ -23,7 +25,7 @@ class BaseInlineActionsMixin:
     INLINE_MODEL_ADMIN = 'inline'
     MODEL_ADMIN = 'admin'
 
-    inline_actions = []
+    inline_actions: Optional[List[Union[str, Callable]]] = []
 
     def get_inline_actions(self, request, obj=None):
         """
@@ -79,13 +81,11 @@ class BaseInlineActionsMixin:
         for action_name in self.get_inline_actions(self._request, obj):
             action_func = getattr(self, action_name, None)
             if not action_func:
-                raise RuntimeError(
-                    "Could not find action `{}`".format(action_name))
+                raise RuntimeError("Could not find action `{}`".format(action_name))
 
             # Add per-object label support
             action_name = action_func.__name__
-            label_handler = getattr(
-                self, 'get_{}_label'.format(action_name), None)
+            label_handler = getattr(self, 'get_{}_label'.format(action_name), None)
             if callable(label_handler):
                 description = label_handler(obj=obj)
             else:
@@ -95,8 +95,7 @@ class BaseInlineActionsMixin:
                     description = capfirst(action_name.replace('_', ' '))
 
             # Add per-object css classes support
-            css_handler = getattr(
-                self, 'get_{}_css'.format(action_name), None)
+            css_handler = getattr(self, 'get_{}_css'.format(action_name), None)
             if callable(css_handler):
                 css_classes = css_handler(obj=obj)
             else:
@@ -124,11 +123,12 @@ class BaseInlineActionsMixin:
                     css_classes,
                 )
             )
-        return mark_safe('<div class="submit_row inline_actions">{}</div>'.format(
-            ''.join(buttons)
-        ))
-    render_inline_actions.short_description = _("Actions")
-    render_inline_actions.allow_tags = True
+        return mark_safe(
+            '<div class="submit_row inline_actions">{}</div>'.format(''.join(buttons))
+        )
+
+    render_inline_actions.short_description = _("Actions")  # type: ignore
+    render_inline_actions.allow_tags = True  # type: ignore
 
 
 class InlineActionsMixin(BaseInlineActionsMixin):
@@ -137,8 +137,8 @@ class InlineActionsMixin(BaseInlineActionsMixin):
         # we have to add <p> tags as a workaround for invalid html
         return mark_safe('</p>{}<p>'.format(html))
 
-    render_inline_actions.short_description = _("Actions")
-    render_inline_actions.allow_tags = True
+    render_inline_actions.short_description = _("Actions")  # type: ignore
+    render_inline_actions.allow_tags = True  # type: ignore
 
     def get_fields(self, request, obj=None):
         # store `request` for `get_inline_actions`
@@ -154,11 +154,7 @@ class InlineActionsMixin(BaseInlineActionsMixin):
 
 class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
     class Media:
-        css = {
-            "all": (
-                "inline_actions/css/inline_actions.css",
-            )
-        }
+        css = {"all": ("inline_actions/css/inline_actions.css",)}
 
     def get_list_display(self, request):
         # store `request` for `get_inline_actions`
@@ -217,7 +213,7 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
                     parent_obj._meta.app_label,
                     parent_obj._meta.model_name,
                 ),
-                args=(parent_obj.pk,)
+                args=(parent_obj.pk,),
             )
 
         # readd query string
@@ -234,8 +230,9 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
 
         Returns `HttpResponse` or `None`
         """
-        all_actions = [key for key in list(request.POST.keys())
-                       if key.startswith('_action__')]
+        all_actions = [
+            key for key in list(request.POST.keys()) if key.startswith('_action__')
+        ]
 
         if request.method == 'POST' and all_actions:
             assert len(all_actions) == 1
@@ -246,8 +243,7 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             admin_class_name, admin_type = raw_action_parts[:2]
             action, app_label, model_name, object_pk = raw_action_parts[2:]
 
-            model = apps.get_model(app_label=app_label,
-                                   model_name=model_name)
+            model = apps.get_model(app_label=app_label, model_name=model_name)
             parent_obj = self.get_object(request, object_id)
 
             # find action and execute
@@ -269,7 +265,8 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
 
             if model_admin:
                 return self._execute_action(
-                    request, model_admin, action, obj, parent_obj)
+                    request, model_admin, action, obj, parent_obj
+                )
         return None
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
@@ -279,8 +276,7 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             return response
 
         # continue normally
-        return super().changeform_view(
-            request, object_id, form_url, extra_context)
+        return super().changeform_view(request, object_id, form_url, extra_context)
 
     def changelist_view(self, request, extra_context=None):
         # handle requested action if required
@@ -289,5 +285,4 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             return response
 
         # continue normally
-        return super().changelist_view(
-            request, extra_context)
+        return super().changelist_view(request, extra_context)

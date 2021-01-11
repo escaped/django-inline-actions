@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -12,7 +13,7 @@ SECRET_KEY = '=ycop_5evy)i4s@_5cuw(5q*$e(03kj!ajeg92$g8$42a_nw_w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: List[str] = []
 
 
 # Application definition
@@ -24,7 +25,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'inline_actions',
     'test_proj.blog',
 )
