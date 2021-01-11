@@ -20,10 +20,7 @@ class Article(models.Model):
         (PUBLISHED, _("Published")),
     )
 
-    author = models.ForeignKey(
-        Author,
-        on_delete=models.CASCADE
-    )
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     title = models.CharField(
         max_length=100,
     )
@@ -39,6 +36,5 @@ class Article(models.Model):
 
 
 class AuthorProxy(Author):
-
     class Meta:
         proxy = True

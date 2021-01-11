@@ -1,9 +1,16 @@
 # django-inline-actions
 
-[![pypi](https://img.shields.io/pypi/v/django-inline-actions.svg)](https://pypi.python.org/pypi/django-inline-actions) [![Build Status](https://travis-ci.org/escaped/django-inline-actions.svg?branch=master)](http://travis-ci.org/escaped/django-inline-actions) [![Coverage](https://coveralls.io/repos/escaped/django-inline-actions/badge.svg?branch=master)](https://coveralls.io/r/escaped/django-inline-actions) ![python version](https://img.shields.io/pypi/pyversions/django-inline-actions.svg) ![Project status](https://img.shields.io/pypi/status/django-inline-actions.svg) ![license](https://img.shields.io/pypi/l/django-inline-actions.svg)
+![PyPI](https://img.shields.io/pypi/v/django-inline-actions?style=flat-square)
+![GitHub Workflow Status (master)](https://img.shields.io/github/workflow/status/escaped/django-inline-actions/Test%20&%20Lint/master?style=flat-square)
+![Coveralls github branch](https://img.shields.io/coveralls/github/escaped/django-inline-actions/master?style=flat-square)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-inline-actions?style=flat-square)
+![PyPI - License](https://img.shields.io/pypi/l/django-inline-actions?style=flat-square)
 
-django-inline-actions adds actions to the InlineModelAdmin and ModelAdmin changelist.
+django-inline-actions adds actions to each row of the ModelAdmin or InlineModelAdmin.
 
+## Requirements
+
+* Python 3.6.1 or newer
 
 ## Screenshot
 
@@ -12,14 +19,13 @@ django-inline-actions adds actions to the InlineModelAdmin and ModelAdmin change
 
 ## Installation
 
-**NOTE** If you are on `django<2.0`, you have to use `django-inline-actions<2.0`.
-
 1. Install django-inline-actions
 
-    pip install django-inline-actions
+   ```sh
+   pip install django-inline-actions
+   ```
 
 2. Add `inline_actions` to your `INSTALLED_APPS`.
-
 
 ## Integration
 
@@ -54,14 +60,13 @@ def get_action_name_label(self, obj):
 
 def get_action_name_css(self, obj):
     return 'some string'
-```    
+```
 
 | Argument | Description                                |
 |----------|--------------------------------------------|
 | `obj`    | instance on which the action was triggered |
 
 Each defined method has to return a string.
-
 
 ### Example 1
 
@@ -94,8 +99,7 @@ class AuthorAdmin(InlineActionsModelAdminMixin,
 @admin.register(Article)
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('title', 'status', 'author')
-``` 
-
+```
 
 We now want to add two simple actions (`view`, `unpublish`) to each article within the `AuthorAdmin`.
 The `view` action redirects to the changeform of the selected instance.
@@ -145,8 +149,7 @@ class ArticleInline(InlineActionsMixin,
         inline_obj.save()
         messages.info(request, _("Article unpublished"))
     unpublish.short_description = _("Unpublish")
-``` 
-
+```
 
 Adding `inline_actions` to the changelist works similar. See the sample project for further details (`test_proj/blog/admin.py`).
 
@@ -168,7 +171,7 @@ def toggle_publish(self, request, obj, parent_obj=None):
         messages.info(request, _("Article unpublished."))
     else:
         messages.info(request, _("Article published."))
-```      
+```
 
 This might leave the user with an ambiguous button label as it will be called `Toggle publish` regardless of the internal state.
 We can specify a dynamic label by adding a special method `get_ACTIONNAME_label`.
@@ -178,8 +181,7 @@ def get_toggle_publish_label(self, obj):
     if obj.status == Article.DRAFT:
         return 'Publish'
     return 'Unpublish'
-``` 
-
+```
 
 So assuming an object in a row has `DRAFT` status, then the button label will be `Toggle publish` and `Toggle unpublish` otherwise.
 
@@ -190,7 +192,7 @@ def get_toggle_publish_css(self, obj):
     if obj.status == Article.DRAFT:
         return 'btn-red'
     return 'btn-green'
-```    
+```
 
 You can make it more eye-candy by using `btn-green` that makes your button green and `btn-red` that makes your button red.
 Or you can use those classes to add some javascript logic (i.e. confirmation box).
@@ -220,6 +222,7 @@ When performing a certain critical action or ones which may not be easily revers
     </script>
 {% endblock %}
 ```
+
 If a staff user has clicked any inline action accidentally, they can safely click no in the confirmation prompt & the inline action form would not be submitted.
 
 ## Intermediate forms
@@ -258,7 +261,6 @@ In the case above we have to consider 3 cases:
 
 The corresponding action could look like
 
-
 ```python
     def change_title(self, request, obj, parent_obj=None):
 
@@ -281,7 +283,6 @@ The corresponding action could look like
         )
 ```
 
-
 ## Example Application
 
 You can see `django-inline-actions` in action using the bundled test application `test_proj`.
@@ -300,12 +301,10 @@ poetry run ./manage.py runserver
 
 Open [`http://localhost:8000/admin/`](http://localhost:8000/admin/) in your browser and create an author and some articles.
 
-
 ## How to test your actions?
 
-There are two ways how you could write tests for your actions.
+There are two ways on how to write tests for your actions.
 We will use [pytest](https://docs.pytest.org/en/latest/) for the following examples.
-
 
 ### Test the action itself
 
@@ -334,8 +333,7 @@ def test_action_XXX(admin_site):
     admin.render_inline_actions(article)
     response = admin.action_XXX(fake_request, obj)
     # assert the state of the application
-```    
-
+```
 
 ### Test the admin integration
 
@@ -343,3 +341,39 @@ Alternatively, you can test your actions on the real Django admin page.
 You will have to log in, navigate to the corresponding admin and trigger a click on the action.
 To simplify this process you can use [django-webtest](https://github.com/django-webtest/django-webtest).
 Example can be found [here](https://github.com/escaped/django-inline-actions/blob/76b6f6b83c6d1830c2ad71512cd1e85362936dbd/test_proj/blog/tests/test_inline_admin.py#L146).
+
+## Development
+
+This project uses [poetry](https://poetry.eustace.io/) for packaging and
+managing all dependencies and [pre-commit](https://pre-commit.com/) to run
+[flake8](http://flake8.pycqa.org/), [isort](https://pycqa.github.io/isort/),
+[mypy](http://mypy-lang.org/) and [black](https://github.com/python/black).
+
+Clone this repository and run
+
+```bash
+poetry install
+poetry run pre-commit install
+```
+
+to create a virtual enviroment containing all dependencies.
+Afterwards, You can run the test suite using
+
+```bash
+poetry run pytest
+```
+
+This repository follows the [Conventional Commits](https://www.conventionalcommits.org/)
+style.
+
+### Cookiecutter template
+
+This project was created using [cruft](https://github.com/cruft/cruft) and the
+[cookiecutter-pyproject](https://github.com/escaped/cookiecutter-pypackage) template.
+In order to update this repository to the latest template version run
+
+```sh
+cruft update
+```
+
+in the root of this repository.

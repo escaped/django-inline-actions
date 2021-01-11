@@ -23,20 +23,22 @@ class UnPublishActionsMixin(object):
         obj.status = Article.PUBLISHED
         obj.save()
         messages.info(request, _("Article published."))
-    publish.short_description = _("Publish")
+
+    publish.short_description = _("Publish")  # type: ignore
 
     def unpublish(self, request, obj, parent_obj=None):
         obj.status = Article.DRAFT
         obj.save()
         messages.info(request, _("Article unpublished."))
-    unpublish.short_description = _("Unpublish")
+
+    unpublish.short_description = _("Unpublish")  # type: ignore
 
 
 class TogglePublishActionsMixin(object):
-
     def get_inline_actions(self, request, obj=None):
         actions = super(TogglePublishActionsMixin, self).get_inline_actions(
-            request=request, obj=obj)
+            request=request, obj=obj
+        )
         actions.append('toggle_publish')
         return actions
 
@@ -55,12 +57,10 @@ class TogglePublishActionsMixin(object):
         return 'Toggle {}'.format(label)
 
     def get_toggle_publish_css(self, obj):
-        return (
-            'button object-tools' if obj.status == Article.DRAFT else 'default')
+        return 'button object-tools' if obj.status == Article.DRAFT else 'default'
 
 
 class ChangeTitleActionsMixin(object):
-
     def get_inline_actions(self, request, obj=None):
         actions = super(ChangeTitleActionsMixin, self).get_inline_actions(request, obj)
         actions.append('change_title')
@@ -78,21 +78,25 @@ class ChangeTitleActionsMixin(object):
         else:
             form = forms.ChangeTitleForm(instance=obj)
 
-        return render(
-            request,
-            'change_title.html',
-            context={'form': form}
-        )
+        return render(request, 'change_title.html', context={'form': form})
 
 
-class ArticleInline(DefaultActionsMixin,
-                    UnPublishActionsMixin,
-                    TogglePublishActionsMixin,
-                    InlineActionsMixin,
-                    admin.TabularInline):
+class ArticleInline(
+    DefaultActionsMixin,
+    UnPublishActionsMixin,
+    TogglePublishActionsMixin,
+    InlineActionsMixin,
+    admin.TabularInline,
+):
     model = Article
-    fields = ('title', 'status',)
-    readonly_fields = ('title', 'status',)
+    fields = (
+        'title',
+        'status',
+    )
+    readonly_fields = (
+        'title',
+        'status',
+    )
 
     def has_add_permission(self, request):
         return False
@@ -100,12 +104,19 @@ class ArticleInline(DefaultActionsMixin,
 
 class ArticleNoopInline(InlineActionsMixin, admin.TabularInline):
     model = Article
-    fields = ('title', 'status',)
-    readonly_fields = ('title', 'status',)
+    fields = (
+        'title',
+        'status',
+    )
+    readonly_fields = (
+        'title',
+        'status',
+    )
 
     def get_inline_actions(self, request, obj=None):
         actions = super(ArticleNoopInline, self).get_inline_actions(
-            request=request, obj=obj)
+            request=request, obj=obj
+        )
         actions.append('noop_action')
         return actions
 
@@ -114,26 +125,26 @@ class ArticleNoopInline(InlineActionsMixin, admin.TabularInline):
 
 
 @admin.register(AuthorProxy)
-class AuthorMultipleInlinesAdmin(InlineActionsModelAdminMixin,
-                                 admin.ModelAdmin):
+class AuthorMultipleInlinesAdmin(InlineActionsModelAdminMixin, admin.ModelAdmin):
     inlines = [ArticleInline, ArticleNoopInline]
     list_display = ('name',)
     inline_actions = None
 
 
 @admin.register(Author)
-class AuthorAdmin(InlineActionsModelAdminMixin,
-                  admin.ModelAdmin):
+class AuthorAdmin(InlineActionsModelAdminMixin, admin.ModelAdmin):
     inlines = [ArticleInline]
     list_display = ('name',)
     inline_actions = None
 
 
 @admin.register(Article)
-class ArticleAdmin(UnPublishActionsMixin,
-                   TogglePublishActionsMixin,
-                   ChangeTitleActionsMixin,
-                   ViewAction,
-                   InlineActionsModelAdminMixin,
-                   admin.ModelAdmin):
+class ArticleAdmin(
+    UnPublishActionsMixin,
+    TogglePublishActionsMixin,
+    ChangeTitleActionsMixin,
+    ViewAction,
+    InlineActionsModelAdminMixin,
+    admin.ModelAdmin,
+):
     list_display = ('title', 'status', 'author')

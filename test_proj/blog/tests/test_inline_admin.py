@@ -45,8 +45,10 @@ def test_actions_available(admin_client, author):
     """Test weather the action column is rendered."""
     url = reverse('admin:blog_author_change', args=(author.pk,))
     changeview = admin_client.get(url)
-    path = ('.//div[@id="article_set-group"]//table'
-            '//thead//th[starts-with(text(), "Actions")]')
+    path = (
+        './/div[@id="article_set-group"]//table'
+        '//thead//th[starts-with(text(), "Actions")]'
+    )
     assert len(changeview.lxml.xpath(path)) == 1
 
     url = reverse('admin:blog_author_add')
@@ -54,9 +56,10 @@ def test_actions_available(admin_client, author):
     assert len(addview.lxml.xpath(path)) == 1
 
 
-def test_no_actions_on_None(admin_client, author):
+def test_no_actions_on_none(admin_client, author):
     """If `inline_actions=None` no actions should be visible"""
     from ..admin import ArticleInline
+
     url = reverse('admin:blog_article_changelist')
 
     # save
@@ -65,8 +68,10 @@ def test_no_actions_on_None(admin_client, author):
 
     url = reverse('admin:blog_author_change', args=(author.pk,))
     changeview = admin_client.get(url)
-    path = ('.//div[@id="article_set-group"]//table'
-            '//thead//th[starts-with(text(), "Actions")]')
+    path = (
+        './/div[@id="article_set-group"]//table'
+        '//thead//th[starts-with(text(), "Actions")]'
+    )
     assert len(changeview.lxml.xpath(path)) == 0
 
     url = reverse('admin:blog_author_add')
@@ -80,6 +85,7 @@ def test_no_actions_on_None(admin_client, author):
 def test_actions_methods_called(admin_client, mocker, article):
     """Test is all required methods are called."""
     from inline_actions.admin import InlineActionsMixin
+
     mocker.spy(InlineActionsMixin, 'render_inline_actions')
     mocker.spy(InlineActionsMixin, 'get_inline_actions')
     author = article.author
@@ -99,8 +105,8 @@ def test_actions_rendered(admin_client, article, action):
     url = reverse('admin:blog_author_change', args=(author.pk,))
     changeview = admin_client.get(url)
 
-    input_name = (
-        '_action__articleinline__inline__{}__blog__article__{}'.format(action, article.pk)
+    input_name = '_action__articleinline__inline__{}__blog__article__{}'.format(
+        action, article.pk
     )
     assert input_name in dict(changeview.form.fields)
 
@@ -108,6 +114,7 @@ def test_actions_rendered(admin_client, article, action):
 def test_publish_action(admin_client, mocker, article):
     """Test dynamically added actions using `get_actions()`"""
     from ..admin import UnPublishActionsMixin
+
     mocker.spy(UnPublishActionsMixin, 'get_inline_actions')
     mocker.spy(UnPublishActionsMixin, 'publish')
     mocker.spy(UnPublishActionsMixin, 'unpublish')
@@ -119,7 +126,9 @@ def test_publish_action(admin_client, mocker, article):
         '_action__articleinline__inline__publish__blog__article__{}'.format(article.pk)
     )
     unpublish_input_name = (
-        '_action__articleinline__inline__unpublish__blog__article__{}'.format(article.pk)
+        '_action__articleinline__inline__unpublish__blog__article__{}'.format(
+            article.pk
+        )
     )
 
     # open changeform
@@ -150,6 +159,7 @@ def test_publish_action(admin_client, mocker, article):
 def test_view_action(admin_client, mocker, article):
     """Test view action."""
     from inline_actions.actions import ViewAction
+
     mocker.spy(ViewAction, 'view_action')
     author = article.author
 
@@ -171,8 +181,8 @@ def test_view_action(admin_client, mocker, article):
 def test_delete_action_without_permission(admin_client, mocker, article):
     """Delete action should not be visible without permission."""
     from ..admin import ArticleInline
-    mocker.patch.object(ArticleInline, 'has_delete_permission',
-                        return_value=False)
+
+    mocker.patch.object(ArticleInline, 'has_delete_permission', return_value=False)
     author = article.author
 
     # mock delete_permission
@@ -190,6 +200,7 @@ def test_delete_action_without_permission(admin_client, mocker, article):
 def test_delete_action(admin_client, mocker, article):
     """Test delete action."""
     from inline_actions.actions import DeleteAction
+
     mocker.spy(DeleteAction, 'delete_action')
     author = article.author
 

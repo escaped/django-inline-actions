@@ -8,14 +8,16 @@ def test_actions_available(admin_client, article):
     """Test weather the action column is rendered."""
     url = reverse('admin:blog_article_changelist')
     changeview = admin_client.get(url)
-    path = ('.//table[@id="result_list"]'
-            '//thead//th//*[starts-with(text(), "Actions")]')
+    path = (
+        './/table[@id="result_list"]' '//thead//th//*[starts-with(text(), "Actions")]'
+    )
     assert len(changeview.lxml.xpath(path)) == 1
 
 
-def test_no_actions_on_None(admin_client, article):
+def test_no_actions_on_none(admin_client, article):
     """If `inline_actions=None` no actions should be visible"""
     from ..admin import ArticleAdmin
+
     url = reverse('admin:blog_article_changelist')
 
     # save
@@ -23,8 +25,9 @@ def test_no_actions_on_None(admin_client, article):
     ArticleAdmin.inline_actions = None
 
     changeview = admin_client.get(url)
-    path = ('.//table[@id="result_list"]'
-            '//thead//th//*[starts-with(text(), "Actions")]')
+    path = (
+        './/table[@id="result_list"]' '//thead//th//*[starts-with(text(), "Actions")]'
+    )
     assert len(changeview.lxml.xpath(path)) == 0
 
     # restore
@@ -34,6 +37,7 @@ def test_no_actions_on_None(admin_client, article):
 def test_actions_methods_called(admin_client, mocker, article):
     """Test is all required methods are called."""
     from inline_actions.admin import BaseInlineActionsMixin
+
     mocker.spy(BaseInlineActionsMixin, 'render_inline_actions')
     mocker.spy(BaseInlineActionsMixin, 'get_inline_actions')
 
@@ -50,6 +54,7 @@ def test_actions_dynamic_label_called(admin_client, mocker, article):
     """
 
     from ..admin import TogglePublishActionsMixin
+
     mocker.spy(TogglePublishActionsMixin, 'get_toggle_publish_label')
 
     url = reverse('admin:blog_article_changelist')
@@ -64,6 +69,7 @@ def test_actions_dynamic_css_called(admin_client, mocker, article):
     """
 
     from ..admin import TogglePublishActionsMixin
+
     mocker.spy(TogglePublishActionsMixin, 'get_toggle_publish_css')
 
     url = reverse('admin:blog_article_changelist')
@@ -78,8 +84,8 @@ def test_actions_rendered(admin_client, article, action):
     url = reverse('admin:blog_article_changelist')
     changelist = admin_client.get(url)
 
-    input_name = (
-        '_action__articleadmin__admin__{}__blog__article__{}'.format(action, article.pk)
+    input_name = '_action__articleadmin__admin__{}__blog__article__{}'.format(
+        action, article.pk
     )
     assert input_name in dict(changelist.form.fields)
 
@@ -87,6 +93,7 @@ def test_actions_rendered(admin_client, article, action):
 def test_publish_action(admin_client, mocker, article):
     """Test dynamically added actions using `get_actions()`"""
     from ..admin import UnPublishActionsMixin
+
     mocker.spy(UnPublishActionsMixin, 'get_inline_actions')
     mocker.spy(UnPublishActionsMixin, 'publish')
     mocker.spy(UnPublishActionsMixin, 'unpublish')
@@ -130,14 +137,15 @@ def test_publish_action(admin_client, mocker, article):
 def test_view_action(admin_client, mocker, article):
     """Test view action."""
     from inline_actions.actions import ViewAction
+
     mocker.spy(ViewAction, 'view_action')
 
     article_url = reverse('admin:blog_article_changelist')
     changeview = admin_client.get(article_url)
 
     # execute and test view action
-    input_name = (
-        '_action__articleadmin__admin__view_action__blog__article__{}'.format(article.pk)
+    input_name = '_action__articleadmin__admin__view_action__blog__article__{}'.format(
+        article.pk
     )
     response = changeview.form.submit(name=input_name).follow()
     assert ViewAction.view_action.call_count == 1

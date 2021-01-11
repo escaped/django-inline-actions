@@ -2,26 +2,27 @@
 name = "django-inline-actions"
 version = "2.3.0"
 description = "django-inline-actions adds actions to each row of the ModelAdmin or InlineModelAdmin."
-authors = ["Alexander Frenzel <alex@relatedworks.com>"]
+authors = [
+    "Alexander Frenzel <alex@relatedworks.com>",
+]
 
-readme = "README.md"
 license = "BSD-3-Clause"
+readme = "README.md"
 
+documentation = "https://github.com/escaped/django-inline-actions/blob/master/README.md"
 homepage = "https://github.com/escaped/django-inline-actions"
 repository = "https://github.com/escaped/django-inline-actions"
-documentation = "https://github.com/escaped/django-inline-actions/blob/master/README.md"
 
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
+  "Development Status :: 4 - Beta",
   "Environment :: Web Environment",
-  "Framework :: Django",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.5",
   "Programming Language :: Python :: 3.6",
   "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
@@ -30,18 +31,52 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = ">=3.6.1, <4.0"
 
 [tool.poetry.dev-dependencies]
+autoflake = "^1.4"
+black = "^20.8b1"
 django-webtest = "^1.9"
-pytest-mock = "^1.10"
-tox = "^3.9"
-pytest-flake8 = "^1.0"
-flake8-isort = "^2.7"
-pytest-django = "^3.4"
-pytest-cov = "^2.7"
+flake8 = "^3.8.3"
+flake8-bugbear = "^20.11.1"
+flake8-builtins = "^1.5.3"
+flake8-comprehensions = "^3.3.1"
+flake8-debugger = "^4.0.0"
+isort = "^5.5.2"
 lxml = "^4.3"
+mypy = "^0.782"
+pep8-naming = "^0.11.1"
+pre-commit = "^2.7.1"
+pytest = "^6.0.1"
+pytest-cov = "^2.10.1"
+pytest-django = "^3.4"
+pytest-mock = "^3.3.1"
+tox = "^3.20.0"
+tox-gh-actions = "^1.3.0"
+
+[tool.black]
+line-length = 88
+skip-string-normalization = true
+target_version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
