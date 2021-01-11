@@ -85,7 +85,7 @@ class ArticleInline(InlineActionsMixin,
     model = Article
     inline_actions = []
 
-    def has_add_permission(self):
+    def has_add_permission(self, request, obj=None):
         return False
 
 
