@@ -144,9 +144,9 @@ class ArticleInline(InlineActionsMixin,
                 actions.append('unpublish')
         return actions
 
-    def unpublish(self, request, obj, inline_obj):
-        inline_obj.status = Article.DRAFT
-        inline_obj.save()
+    def unpublish(self, request, obj, parent_obj=None):
+        obj.status = Article.DRAFT
+        obj.save()
         messages.info(request, _("Article unpublished"))
     unpublish.short_description = _("Unpublish")
 ```
