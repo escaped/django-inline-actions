@@ -176,7 +176,8 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             # django adds all readonly fields by default
             # if `self.fields` is not defined we don't want to include
             # `render_inline_actions
-            fields.remove('render_inline_actions')
+            if 'render_inline_actions' in fields:
+                fields.remove('render_inline_actions')
         return fields
 
     def _execute_action(self, request, model_admin, action, obj, parent_obj=None):
