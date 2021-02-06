@@ -216,3 +216,32 @@ def test_skip_rendering_actions_for_unsaved_objects(admin_client, mocker, articl
     admin = ArticleAdmin(unsaved_article, admin_site)
 
     assert admin.render_inline_actions(unsaved_article) == ''
+
+
+@pytest.mark.django_db
+def test_missing_render_inline_actions_from_readonly_fields(
+    rf, admin_user, admin_site, article
+):
+    """
+    Make sure that customization does not break the app.
+    """
+    from test_proj.blog import admin
+
+    class ArticleAdmin(admin.InlineActionsModelAdminMixin, admin.admin.ModelAdmin):
+        list_display = ('name',)
+        inline_actions = None
+
+        def get_readonly_fields(self, *args, **kwargs):
+            """
+            Do some fancy logic to return a list of fields, which does not include `render_inline_actions`.
+            """
+            return []
+
+    request = rf.get(f'/admin/blog/articles/{article.id}/')
+    request.user = admin_user
+
+    admin = ArticleAdmin(Article, admin_site)
+
+    # even though `render_inline_actions` is not part of the fields,
+    # it should not fail :)
+    admin.changeform_view(request)
