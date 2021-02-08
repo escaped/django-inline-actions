@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+* Do not break if `render_inline_actions` field is missing, thanks to @tony
+
 ### Added
 
 * support for django 3.x
