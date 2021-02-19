@@ -349,6 +349,9 @@ managing all dependencies and [pre-commit](https://pre-commit.com/) to run
 [flake8](http://flake8.pycqa.org/), [isort](https://pycqa.github.io/isort/),
 [mypy](http://mypy-lang.org/) and [black](https://github.com/python/black).
 
+Additionally, [pdbpp](https://github.com/pdbpp/pdbpp) and [better-exceptions](https://github.com/qix-/better-exceptions) are installed to provide a better debugging experience.
+To enable `better-exceptions` you have to run `export BETTER_EXCEPTIONS=1` in your current session/terminal.
+
 Clone this repository and run
 
 ```bash
