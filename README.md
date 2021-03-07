@@ -131,7 +131,7 @@ Since `unpublish` depends on `article.status` we must use `get_inline_actions` t
 
 ```python
 from django.contrib import admin, messages
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class ArticleInline(InlineActionsMixin,
