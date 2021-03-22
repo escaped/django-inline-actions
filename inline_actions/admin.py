@@ -104,6 +104,17 @@ class BaseInlineActionsMixin:
                 except AttributeError:
                     css_classes = ''
 
+            # Add per-object attribute support
+            attr_handler = getattr(
+                self, 'get_{}_attr'.format(action_name), None)
+            if callable(attr_handler):
+                attribute_properties = attr_handler(obj=obj)
+            else:
+                try:
+                    attribute_properties = action_func.attribute_properties
+                except AttributeError:
+                    attribute_properties = ''
+
             # If the form is submitted, we have no information about the
             # requested action.
             # Hence we need all data to be encoded using the action name.
@@ -117,10 +128,11 @@ class BaseInlineActionsMixin:
                 str(obj.pk),
             ]
             buttons.append(
-                '<input type="submit" name="{}" value="{}" class="{}">'.format(
+                '<input type="submit" name="{}" value="{}" class="{}" {}>'.format(
                     '_action__{}'.format('__'.join(action_data)),
                     description,
                     css_classes,
+                    attribute_properties
                 )
             )
         return mark_safe(
