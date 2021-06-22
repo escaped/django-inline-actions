@@ -38,3 +38,8 @@ class Article(models.Model):
 class AuthorProxy(Author):
     class Meta:
         proxy = True
+
+
+class AuthorSecondProxy(Author):
+    class Meta:
+        proxy = True

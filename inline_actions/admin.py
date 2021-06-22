@@ -254,7 +254,7 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
                 # parent_obj is None because `object_id` is None
 
             else:
-                for inline in self.get_inline_instances(request):
+                for inline in self.get_inline_instances(request, obj=parent_obj):
                     inline_class_name = inline.__class__.__name__.lower()
                     matches_inline_class = inline_class_name == admin_class_name
                     matches_model = inline.model == model

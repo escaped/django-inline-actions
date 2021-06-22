@@ -156,6 +156,43 @@ def test_publish_action(admin_client, mocker, article):
     assert article.status == Article.DRAFT
 
 
+def test_publish_action_works_with_dynamic_inlines(
+    admin_client, mocker, author, article
+):
+    """
+    Tests whether we can execute an inline action if the inline class is dynamically displayed.
+    """
+    from ..admin import UnPublishActionsMixin
+
+    author.name = 'DISPLAY INLINE'
+    author.save()
+
+    mocker.spy(UnPublishActionsMixin, 'get_inline_actions')
+    mocker.spy(UnPublishActionsMixin, 'publish')
+    mocker.spy(UnPublishActionsMixin, 'unpublish')
+    assert article.status == Article.DRAFT
+
+    publish_input_name = (
+        '_action__articleinline__inline__publish__blog__article__{}'.format(article.pk)
+    )
+    unpublish_input_name = (
+        '_action__articleinline__inline__unpublish__blog__article__{}'.format(
+            article.pk
+        )
+    )
+    author_url = reverse('admin:blog_authorsecondproxy_change', args=(author.pk,))
+    changeview = admin_client.get(author_url)
+    assert UnPublishActionsMixin.get_inline_actions.call_count > 0
+    assert publish_input_name in dict(changeview.form.fields)
+    # execute and test publish action
+    changeview = changeview.form.submit(name=publish_input_name).follow()
+    article = Article.objects.get(pk=article.pk)
+    assert publish_input_name not in dict(changeview.form.fields)
+    assert unpublish_input_name in dict(changeview.form.fields)
+    assert UnPublishActionsMixin.publish.call_count == 1
+    assert article.status == Article.PUBLISHED
+
+
 def test_view_action(admin_client, mocker, article):
     """Test view action."""
     from inline_actions.actions import ViewAction
