@@ -97,7 +97,7 @@ class AuthorAdmin(InlineActionsModelAdminMixin,
 
 
 @admin.register(Article)
-class AuthorAdmin(admin.ModelAdmin):
+class ArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'status', 'author')
 ```
 
