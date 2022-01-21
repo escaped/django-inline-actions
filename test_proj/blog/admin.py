@@ -6,7 +6,7 @@ from inline_actions.actions import DefaultActionsMixin, ViewAction
 from inline_actions.admin import InlineActionsMixin, InlineActionsModelAdminMixin
 
 from . import forms
-from .models import Article, Author, AuthorProxy
+from .models import Article, Author, AuthorProxy, AuthorSecondProxy
 
 
 class UnPublishActionsMixin(object):
@@ -136,6 +136,17 @@ class AuthorAdmin(InlineActionsModelAdminMixin, admin.ModelAdmin):
     inlines = [ArticleInline]
     list_display = ('name',)
     inline_actions = None
+
+
+@admin.register(AuthorSecondProxy)
+class AuthorMaybeInlineAdmin(InlineActionsModelAdminMixin, admin.ModelAdmin):
+    list_display = ('name',)
+    inline_actions = None
+
+    def get_inlines(self, request, obj):
+        if not obj or obj.name != 'DISPLAY INLINE':
+            return []
+        return [ArticleInline]
 
 
 @admin.register(Article)

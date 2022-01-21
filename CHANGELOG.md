@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * removed RemovedInDjango40Warning warning message, thanks to @Ivan-Feofanov
+* fixed a bug where the handle_action function does not pass through parent objects into `get_inline_instances`
 
 ## [2.4.0] - 2021-02-08
 
