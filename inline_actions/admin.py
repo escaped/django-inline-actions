@@ -202,7 +202,8 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
         if parent_obj is None:  # InlineActionsMixin.MODEL_ADMIN:
             # redirect to `changelist`
             url = reverse(
-                'admin:{}_{}_changelist'.format(
+                '{}:{}_{}_changelist'.format(
+                    self.admin_site.name,
                     obj._meta.app_label,
                     obj._meta.model_name,
                 ),
@@ -210,7 +211,8 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
         else:
             # redirect to `changeform`
             url = reverse(
-                'admin:{}_{}_change'.format(
+                '{}:{}_{}_change'.format(
+                    self.admin_site.name,
                     parent_obj._meta.app_label,
                     parent_obj._meta.model_name,
                 ),

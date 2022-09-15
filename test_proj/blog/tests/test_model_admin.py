@@ -134,6 +134,53 @@ def test_publish_action(admin_client, mocker, article):
     assert article.status == Article.DRAFT
 
 
+def test_custom_admin_publish_action(admin_client, mocker, article):
+    """Test dynamically added actions using `get_actions()`"""
+    from ..admin import UnPublishActionsMixin
+
+    mocker.spy(UnPublishActionsMixin, 'get_inline_actions')
+    mocker.spy(UnPublishActionsMixin, 'publish')
+    mocker.spy(UnPublishActionsMixin, 'unpublish')
+    assert article.status == Article.DRAFT
+
+    article_url = reverse('custom_admin:blog_article_changelist')
+    publish_input_name = (
+        '_action__articleadmin__admin__publish__blog__article__{}'.format(article.pk)
+    )
+    unpublish_input_name = (
+        '_action__articleadmin__admin__unpublish__blog__article__{}'.format(
+            article.pk,
+        )
+    )
+
+    # open changelist
+    changelist = admin_client.get(article_url)
+    assert UnPublishActionsMixin.get_inline_actions.call_count > 0
+    assert publish_input_name in dict(changelist.form.fields)
+    assert "custom_admin" in article_url
+
+    # execute and test publish action
+    changelist = changelist.form.submit(name=publish_input_name).follow()
+    # not available in django 1.7
+    # article.refresh_from_db()
+    article = Article.objects.get(pk=article.pk)
+    assert publish_input_name not in dict(changelist.form.fields)
+    assert unpublish_input_name in dict(changelist.form.fields)
+    assert UnPublishActionsMixin.publish.call_count == 1
+    assert article.status == Article.PUBLISHED
+    assert changelist.request.path == article_url
+
+    # execute and test unpublish action
+    changelist = changelist.form.submit(name=unpublish_input_name).follow()
+    # article.refresh_from_db()
+    article = Article.objects.get(pk=article.pk)
+    assert publish_input_name in dict(changelist.form.fields)
+    assert unpublish_input_name not in dict(changelist.form.fields)
+    assert UnPublishActionsMixin.unpublish.call_count == 1
+    assert article.status == Article.DRAFT
+    assert changelist.request.path == article_url
+
+
 def test_view_action(admin_client, mocker, article):
     """Test view action."""
     from inline_actions.actions import ViewAction
