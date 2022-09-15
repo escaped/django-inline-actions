@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * test suite is compatible with the extra logout form rendered by Django >= 4.2
 * modernized packaging and tooling to `uv`, `hatchling` and `ruff`
 * removed RemovedInDjango40Warning warning message, thanks to @Ivan-Feofanov
+* fixed #49, fixes reverse url lookup to handle custom admin pages.
 
 ### Fixed
 
