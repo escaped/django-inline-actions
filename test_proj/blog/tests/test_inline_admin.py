@@ -156,6 +156,54 @@ def test_publish_action(admin_client, mocker, article):
     assert article.status == Article.DRAFT
 
 
+def test_custom_admin_publish_action(admin_client, mocker, article):
+    """Test dynamically added actions using `get_actions()`"""
+    from ..admin import UnPublishActionsMixin
+
+    mocker.spy(UnPublishActionsMixin, 'get_inline_actions')
+    mocker.spy(UnPublishActionsMixin, 'publish')
+    mocker.spy(UnPublishActionsMixin, 'unpublish')
+    author = article.author
+    assert article.status == Article.DRAFT
+
+    author_url = reverse('custom_admin:blog_authorproxy_change', args=(author.pk,))
+    publish_input_name = (
+        '_action__articleinline__inline__publish__blog__article__{}'.format(article.pk)
+    )
+    unpublish_input_name = (
+        '_action__articleinline__inline__unpublish__blog__article__{}'.format(
+            article.pk
+        )
+    )
+
+    # open changeform
+    changeview = admin_client.get(author_url)
+    assert UnPublishActionsMixin.get_inline_actions.call_count > 0
+    assert publish_input_name in dict(changeview.form.fields)
+    assert "custom_admin" in changeview.request.path
+
+    # execute and test publish action
+    changeview = changeview.form.submit(name=publish_input_name).follow()
+    # not available in django 1.7
+    # article.refresh_from_db()
+    article = Article.objects.get(pk=article.pk)
+    assert publish_input_name not in dict(changeview.form.fields)
+    assert unpublish_input_name in dict(changeview.form.fields)
+    assert UnPublishActionsMixin.publish.call_count == 1
+    assert article.status == Article.PUBLISHED
+    assert changeview.request.path == author_url
+
+    # execute and test unpublish action
+    changeview = changeview.form.submit(name=unpublish_input_name).follow()
+    # article.refresh_from_db()
+    article = Article.objects.get(pk=article.pk)
+    assert publish_input_name in dict(changeview.form.fields)
+    assert unpublish_input_name not in dict(changeview.form.fields)
+    assert UnPublishActionsMixin.unpublish.call_count == 1
+    assert article.status == Article.DRAFT
+    assert changeview.request.path == author_url
+
+
 def test_view_action(admin_client, mocker, article):
     """Test view action."""
     from inline_actions.actions import ViewAction

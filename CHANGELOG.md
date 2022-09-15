@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * removed RemovedInDjango40Warning warning message, thanks to @Ivan-Feofanov
+* fixed #49, fixes reverse url lookup to handle custom admin pages.
 
 ## [2.4.0] - 2021-02-08
 
