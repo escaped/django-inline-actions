@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-inline-actions"
-version = "2.4.0"
+version = "2.5.0"
 description = "django-inline-actions adds actions to each row of the ModelAdmin or InlineModelAdmin."
 authors = [
     "Alexander Frenzel <alex@relatedworks.com>",
@@ -20,8 +20,6 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.6",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Topic :: Software Development :: Libraries :: Python Modules",
@@ -32,9 +30,9 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.6.1, <4.0"
+python = ">=3.8, <4.0"
 
-django = ">=2.0"
+django = ">=3.0, <4.1"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
@@ -48,7 +46,7 @@ flake8-comprehensions = "^3.3.1"
 flake8-debugger = "^4.0.0"
 isort = "^5.5.2"
 lxml = "^4.3"
-mypy = "^0.800"
+mypy = "^0.971"
 pdbpp = "^0.10.2"
 pep8-naming = "^0.11.1"
 pre-commit = "^2.7.1"
