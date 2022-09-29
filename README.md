@@ -10,7 +10,7 @@ django-inline-actions adds actions to each row of the ModelAdmin or InlineModelA
 
 ## Requirements
 
-* Python 3.6.1 or newer
+* Python 3.8 or newer
 
 ## Screenshot
 

@@ -9,3 +9,4 @@
 - [@tony](https://github.com/tony)
 - [@tripliks](https://github.com/tripliks)
 - [@Ivan-Feofanov](https://github.com/Ivan-Feofanov)
+- [@stefanwitchell1990](https://github.com/stefanwitchell1990)
