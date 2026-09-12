@@ -226,6 +226,36 @@ When performing a certain critical action or ones which may not be easily revers
 
 If a staff user has clicked any inline action accidentally, they can safely click no in the confirmation prompt & the inline action form would not be submitted.
 
+### Permissions and audit trail
+
+Actions are executed on behalf of the current admin user, so check the
+permissions you rely on and raise `PermissionDenied` when they are missing.
+
+```python
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
+from django.utils.translation import gettext_lazy as _
+
+
+class ArticleInline(InlineActionsMixin,
+                    admin.TabularInline):
+    # ...
+    def unpublish(self, request, obj, parent_obj=None):
+        if not self.has_change_permission(request, obj):
+            raise PermissionDenied
+        obj.status = Article.DRAFT
+        obj.save()
+        messages.info(request, _("Article unpublished"))
+    unpublish.short_description = _("Unpublish")
+```
+
+Actions on the changelist are methods of your `ModelAdmin`, so you can also
+add them to the object's admin history with
+`self.log_change(request, obj, _("Article unpublished"))`.
+Inline actions are methods of the `InlineModelAdmin`, which has no
+`log_change`; use `LogEntry.objects.log_actions(...)` if you need history
+entries for them.
+
 ## Intermediate forms
 
 The current implementation for using intermediate forms involves some manual handling.
