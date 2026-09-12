@@ -66,6 +66,7 @@ ignore = ["E501"]
 quote-style = "preserve"
 
 [tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "test_proj.settings"
 addopts = ["--durations=10", "--cov=inline_actions", "--cov-report=term-missing"]
 norecursedirs = ["build", "dist"]
 testpaths = ["inline_actions", "test_proj"]

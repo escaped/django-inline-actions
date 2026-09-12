@@ -26,6 +26,10 @@ jobs:
           uv run --no-sync ruff format --check .
       - name: Type check
         run: uv run --no-sync mypy
+      - name: Check test project
+        run: |
+          cd test_proj
+          uv run --no-sync python manage.py check
 
   test:
     name: Django ${{ matrix.django }} / Python ${{ matrix.python }}
