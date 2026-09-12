@@ -2,6 +2,7 @@
 
 ![PyPI](https://img.shields.io/pypi/v/django-inline-actions?style=flat-square)
 ![GitHub Workflow Status (master)](https://github.com/escaped/django-inline-actions/actions/workflows/test.yml/badge.svg?branch=master)
+![Coveralls github branch](https://img.shields.io/coveralls/github/escaped/django-inline-actions/master?style=flat-square)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-inline-actions?style=flat-square)
 ![PyPI - License](https://img.shields.io/pypi/l/django-inline-actions?style=flat-square)
 
@@ -10,7 +11,7 @@ django-inline-actions adds actions to each row of the ModelAdmin or InlineModelA
 ## Requirements
 
 * Python 3.10 or newer
-* Django 4.2 or newer (4.2 LTS, 5.2 LTS and 6.x are tested in CI)
+* Django 4.2 or newer (4.2 LTS, 5.2 LTS and 6.1 are tested in CI)
 
 ## Screenshot
 

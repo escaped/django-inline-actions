@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* support for Django 4.2 LTS, 5.2 LTS and Django 6.x
+* support for Django 4.2 LTS, 5.2 LTS and Django 6.1
 
 ### Changed
 
