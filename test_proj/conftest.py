@@ -24,9 +24,9 @@ def admin_client(app, admin_user):
 
 
 @pytest.fixture
-def action_form():
+def find_action_form():
     """
-    Return the admin form that contains the rendered inline actions.
+    Return a helper that finds the admin form containing the inline actions.
 
     Since Django 4.2 the admin base template contains an additional logout
     form, so ``response.form`` is no longer unambiguous. Inline actions always
