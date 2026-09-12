@@ -35,11 +35,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # previous LTS (EOL April 2026)
-          - python: '3.10'
-            django: '4.2'
-          - python: '3.12'
-            django: '4.2'
           # current LTS
           - python: '3.10'
             django: '5.2'
@@ -47,7 +42,11 @@ jobs:
             django: '5.2'
           - python: '3.14'
             django: '5.2'
-          # latest release
+          # current feature releases
+          - python: '3.12'
+            django: '6.0'
+          - python: '3.14'
+            django: '6.0'
           - python: '3.12'
             django: '6.1'
           - python: '3.14'

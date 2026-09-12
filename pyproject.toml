@@ -14,8 +14,8 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: Web Environment",
   "Framework :: Django",
-  "Framework :: Django :: 4.2",
   "Framework :: Django :: 5.2",
+  "Framework :: Django :: 6.0",
   "Framework :: Django :: 6.1",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
@@ -29,7 +29,7 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ["django>=4.2"]
+dependencies = ["django>=5.2"]
 
 [project.urls]
 Documentation = "https://github.com/escaped/django-inline-actions/blob/master/README.md"

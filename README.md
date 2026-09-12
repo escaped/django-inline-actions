@@ -11,7 +11,7 @@ django-inline-actions adds actions to each row of the ModelAdmin or InlineModelA
 ## Requirements
 
 * Python 3.10 or newer
-* Django 4.2 or newer (4.2 LTS, 5.2 LTS and 6.1 are tested in CI)
+* Django 5.2 or newer (5.2 LTS, 6.0 and 6.1 are tested in CI)
 
 ## Screenshot
 
