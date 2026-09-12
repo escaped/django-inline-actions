@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * modernized packaging and tooling to `uv`, `hatchling` and `ruff`
 * removed RemovedInDjango40Warning warning message, thanks to @Ivan-Feofanov
 
+### Fixed
+
+* inline actions are rendered when the inline admin uses `fieldsets` instead of `fields`
+* `get_inline_instances` receives the parent object when resolving an inline action
+* pressing enter in the admin form saves it instead of triggering the first inline action
+* documented test setup passes a request to the admin instead of relying on a fake one
+
 ### Removed
 
 * poetry in favor of uv, including the cruft/cookiecutter auto-update workflow

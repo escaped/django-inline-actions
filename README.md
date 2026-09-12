@@ -314,6 +314,7 @@ Therefore, we implement a fixture called `admin_site`, which is used on each tes
 ```python
 import pytest
 from django.contrib.admin import AdminSite
+from django.test import RequestFactory
 
 from yourapp.module.admin import MyAdmin
 
@@ -325,13 +326,17 @@ def admin_site():
 @pytest.mark.django_db
 def test_action_XXX(admin_site):
     """Test action XXX"""
-    fake_request = {}  # you might need to use a RequestFactory here
+    request = RequestFactory().get('/')
+    request.user = ...  # a user with the required permissions
     obj = ...  # create an instance
 
-    admin = MyAdmin(obj, admin_site)
+    admin = MyAdmin(type(obj), admin_site)
+    # `render_inline_actions` calls `get_inline_actions`, which receives the
+    # current request; set it if your implementation uses it
+    admin._request = request
 
-    admin.render_inline_actions(article)
-    response = admin.action_XXX(fake_request, obj)
+    admin.render_inline_actions(obj)
+    response = admin.action_XXX(request, obj)
     # assert the state of the application
 ```
 

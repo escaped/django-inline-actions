@@ -78,7 +78,19 @@ class BaseInlineActionsMixin:
             return ''
 
         buttons = []
-        for action_name in self.get_inline_actions(self._request, obj):
+
+        # Implicit form submission (pressing enter) uses the first submit
+        # button of a form. Insert a hidden save button before the actions so
+        # entering text does not trigger an action.
+        # https://html.spec.whatwg.org/#implicit-submission
+        if self._get_admin_type() == self.INLINE_MODEL_ADMIN or getattr(
+            self, '_in_change_form', False
+        ):
+            buttons.append('<input type="submit" name="_save" value="" hidden>')
+
+        for action_name in self.get_inline_actions(
+            getattr(self, '_request', None), obj
+        ):
             action_func = getattr(self, action_name, None)
             if not action_func:
                 raise RuntimeError("Could not find action `{}`".format(action_name))
@@ -149,8 +161,26 @@ class InlineActionsMixin(BaseInlineActionsMixin):
                 fields.append('render_inline_actions')
         return fields
 
+    def get_fieldsets(self, request, obj=None):
+        # store `request` for `get_inline_actions`; Django does not call
+        # `get_fields` when `fieldsets` is set
+        self._request = request
+
+        fieldsets = list(super().get_fieldsets(request, obj))
+        if self.fieldsets and self.inline_actions is not None:
+            # `render_inline_actions` is a readonly field and has to be part
+            # of the rendered fieldsets
+            name, options = fieldsets[-1]
+            fields = list(options.get('fields') or ())
+            if 'render_inline_actions' not in fields:
+                fields.append('render_inline_actions')
+                fieldsets[-1] = (name, {**options, 'fields': fields})
+        return fieldsets
+
 
 class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
+    _in_change_form = False
+
     class Media:
         css = {"all": ("inline_actions/css/inline_actions.css",)}
 
@@ -252,7 +282,8 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
                 # parent_obj is None because `object_id` is None
 
             else:
-                for inline in self.get_inline_instances(request):
+                model_admin = None
+                for inline in self.get_inline_instances(request, parent_obj):
                     inline_class_name = inline.__class__.__name__.lower()
                     matches_inline_class = inline_class_name == admin_class_name
                     matches_model = inline.model == model
@@ -275,6 +306,9 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             return response
 
         # continue normally
+        # the response is rendered after this method returns, so the flag has
+        # to stay set until the next request updates it
+        self._in_change_form = True
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     def changelist_view(self, request, extra_context=None):
@@ -284,4 +318,5 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             return response
 
         # continue normally
+        self._in_change_form = False
         return super().changelist_view(request, extra_context)

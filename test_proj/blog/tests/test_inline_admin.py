@@ -207,3 +207,82 @@ def test_handle_multiple_inlines(admin_client, mocker, article, find_action_form
     )
     find_action_form(changeview).submit(name=input_name).follow()
     assert ArticleNoopInline.noop_action.call_count == 1
+
+
+def test_actions_rendered_with_fieldsets(admin_client, article, find_action_form):
+    """Actions must also render when the inline uses `fieldsets` (issue #56)."""
+    from ..admin import ArticleInline
+
+    old_fields, old_fieldsets = ArticleInline.fields, ArticleInline.fieldsets
+    ArticleInline.fields = None
+    ArticleInline.fieldsets = [(None, {'fields': ('title', 'status')})]
+    try:
+        author_url = reverse('admin:blog_author_change', args=(article.author.pk,))
+        changeview = admin_client.get(author_url)
+    finally:
+        ArticleInline.fields, ArticleInline.fieldsets = old_fields, old_fieldsets
+
+    input_name = '_action__articleinline__inline__publish__blog__article__{}'.format(
+        article.pk,
+    )
+    assert input_name in dict(find_action_form(changeview).fields)
+
+
+@pytest.mark.django_db
+def test_render_inline_actions_without_request(article):
+    """`render_inline_actions` is callable without a request (issue #56)."""
+    from django.contrib import admin
+
+    from ..admin import ArticleNoopInline
+
+    inline = ArticleNoopInline(article.author.__class__, admin.site)
+    html = inline.render_inline_actions(article)
+
+    input_name = (
+        '_action__articlenoopinline__inline__noop_action__blog__article__{}'.format(
+            article.pk,
+        )
+    )
+    assert input_name in html
+
+
+def test_action_with_obj_dependent_inline_instances(
+    admin_client, mocker, article, find_action_form
+):
+    """`get_inline_instances` must receive the parent object (issue #47)."""
+    from ..admin import AuthorAdmin
+
+    original = AuthorAdmin.get_inline_instances
+
+    def get_inline_instances(self, request, obj=None):
+        if obj is None:
+            return []
+        return original(self, request, obj)
+
+    mocker.patch.object(AuthorAdmin, 'get_inline_instances', get_inline_instances)
+
+    author_url = reverse('admin:blog_author_change', args=(article.author.pk,))
+    changeview = admin_client.get(author_url)
+
+    input_name = '_action__articleinline__inline__publish__blog__article__{}'.format(
+        article.pk,
+    )
+    find_action_form(changeview).submit(name=input_name).follow()
+
+    article = Article.objects.get(pk=article.pk)
+    assert article.status == Article.PUBLISHED
+
+
+def test_first_submit_button_is_save(admin_client, article):
+    """
+    Implicit form submission (pressing enter) must save the form instead of
+    triggering the first inline action (issue #44).
+    """
+    author_url = reverse('admin:blog_author_change', args=(article.author.pk,))
+    changeview = admin_client.get(author_url)
+
+    form = changeview.lxml.xpath('.//form[.//input[starts-with(@name, "_action__")]]')[
+        0
+    ]
+    submit_buttons = form.xpath('.//input[@type="submit"]')
+    assert submit_buttons[0].get('name') == '_save'
