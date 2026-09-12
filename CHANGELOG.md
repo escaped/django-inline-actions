@@ -22,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 * poetry in favor of uv, including the cruft/cookiecutter auto-update workflow
-* coveralls coverage upload
 
 ## [2.4.0] - 2021-02-08
 

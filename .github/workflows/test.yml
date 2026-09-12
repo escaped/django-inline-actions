@@ -64,16 +64,18 @@ jobs:
       - name: Pin Django ${{ matrix.django }}
         run: uv pip install "Django~=${{ matrix.django }}.0"
       - name: Run tests
-        run: uv run --no-sync pytest
+        run: uv run --no-sync pytest --cov-report=lcov:coverage/lcov.info
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: django-${{ matrix.django }}-py${{ matrix.python }}
           parallel: true
 
   coveralls_finish:
     name: Coveralls Finished
     needs: [test]
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
