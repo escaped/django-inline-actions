@@ -169,3 +169,25 @@ def test_no_actions_on_changelist(admin_client, article):
     changelist = admin_client.get(url)
 
     assert 'field-render_inline_actions' not in changelist.content.decode('utf8')
+
+
+def test_first_submit_button_is_save(admin_client, article):
+    """
+    Implicit form submission (pressing enter) must save the form instead of
+    triggering the first action (issue #44).
+    """
+    from ..admin import ArticleAdmin
+
+    old_fields = ArticleAdmin.fields
+    ArticleAdmin.fields = ('title', 'status', 'render_inline_actions')
+    try:
+        change_url = reverse('admin:blog_article_change', args=(article.pk,))
+        changeview = admin_client.get(change_url)
+    finally:
+        ArticleAdmin.fields = old_fields
+
+    form = changeview.lxml.xpath('.//form[.//input[starts-with(@name, "_action__")]]')[
+        0
+    ]
+    submit_buttons = form.xpath('.//input[@type="submit"]')
+    assert submit_buttons[0].get('name') == '_save'
