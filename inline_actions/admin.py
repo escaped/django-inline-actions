@@ -81,12 +81,10 @@ class BaseInlineActionsMixin:
 
         # Implicit form submission (pressing enter) uses the first submit
         # button of a form. Insert a hidden save button before the actions so
-        # entering text does not trigger an action.
+        # entering text does not trigger an action. On the changelist the
+        # action "Run" button still comes first, so this stays inert there.
         # https://html.spec.whatwg.org/#implicit-submission
-        if self._get_admin_type() == self.INLINE_MODEL_ADMIN or getattr(
-            self, '_in_change_form', False
-        ):
-            buttons.append('<input type="submit" name="_save" value="" hidden>')
+        buttons.append('<input type="submit" name="_save" value="" hidden>')
 
         for action_name in self.get_inline_actions(
             getattr(self, '_request', None), obj
@@ -179,8 +177,6 @@ class InlineActionsMixin(BaseInlineActionsMixin):
 
 
 class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
-    _in_change_form = False
-
     class Media:
         css = {"all": ("inline_actions/css/inline_actions.css",)}
 
@@ -306,9 +302,6 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             return response
 
         # continue normally
-        # the response is rendered after this method returns, so the flag has
-        # to stay set until the next request updates it
-        self._in_change_form = True
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     def changelist_view(self, request, extra_context=None):
@@ -318,5 +311,4 @@ class InlineActionsModelAdminMixin(BaseInlineActionsMixin):
             return response
 
         # continue normally
-        self._in_change_form = False
         return super().changelist_view(request, extra_context)
