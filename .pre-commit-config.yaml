@@ -1,41 +1,17 @@
 ---
 repos:
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.7
     hooks:
-      - id: black
-        name: black
-        language: system
-        entry: poetry run black
-        types: [python]
-  
-  - repo: local
-    hooks:
-      - id: autoflake
-        name: autoflake
-        language: system
-        entry: poetry run autoflake --expand-star-imports --remove-all-unused-imports --remove-unused-variables --in-place --recursive test_proj/ inline_actions/
-        types: [python]
-
-  - repo: local
-    hooks:
-      - id: isort
-        name: isort
-        language: system
-        entry: poetry run isort
-        types: [python]
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
 
   - repo: local
     hooks:
       - id: mypy
         name: mypy
         language: system
-        entry: poetry run mypy
+        entry: uv run mypy
         types: [python]
-
-  - repo: local
-    hooks:
-      - id: flake8
-        name: flake8
-        language: system
-        entry: poetry run flake8
-        types: [python]
+        pass_filenames: false

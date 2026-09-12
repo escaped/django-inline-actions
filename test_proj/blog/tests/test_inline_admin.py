@@ -1,44 +1,7 @@
 import pytest
 from django.urls import reverse
-from django_webtest import DjangoTestApp, WebTestMixin
 
-from ..models import Article, Author
-
-
-@pytest.fixture(scope='function')
-def app(request):
-    """WebTest's TestApp.
-    Patch and unpatch settings before and after each test.
-    WebTestMixin, when used in a unittest.TestCase, automatically calls
-    _patch_settings() and _unpatchsettings.
-    """
-    wtm = WebTestMixin()
-    wtm._patch_settings()
-    request.addfinalizer(wtm._unpatch_settings)
-    return DjangoTestApp()
-
-
-@pytest.fixture()
-def admin_client(app, admin_user):
-    app.set_user(admin_user)
-    return app
-
-
-@pytest.fixture
-def author():
-    author, __ = Author.objects.get_or_create(
-        name='Author',
-    )
-    return author
-
-
-@pytest.fixture
-def article(author):
-    return Article.objects.create(
-        author=author,
-        body='Body lorem ipson dolor',
-        title='Lorem ipson dolor',
-    )
+from ..models import Article
 
 
 def test_actions_available(admin_client, author):
@@ -98,7 +61,7 @@ def test_actions_methods_called(admin_client, mocker, article):
 
 
 @pytest.mark.parametrize("action", ['view_action', 'publish', 'delete_action'])
-def test_actions_rendered(admin_client, article, action):
+def test_actions_rendered(admin_client, article, action_form, action):
     """Test wether all action buttons are rendered."""
     author = article.author
 
@@ -108,10 +71,10 @@ def test_actions_rendered(admin_client, article, action):
     input_name = '_action__articleinline__inline__{}__blog__article__{}'.format(
         action, article.pk
     )
-    assert input_name in dict(changeview.form.fields)
+    assert input_name in dict(action_form(changeview).fields)
 
 
-def test_publish_action(admin_client, mocker, article):
+def test_publish_action(admin_client, mocker, article, action_form):
     """Test dynamically added actions using `get_actions()`"""
     from ..admin import UnPublishActionsMixin
 
@@ -134,29 +97,29 @@ def test_publish_action(admin_client, mocker, article):
     # open changeform
     changeview = admin_client.get(author_url)
     assert UnPublishActionsMixin.get_inline_actions.call_count > 0
-    assert publish_input_name in dict(changeview.form.fields)
+    assert publish_input_name in dict(action_form(changeview).fields)
 
     # execute and test publish action
-    changeview = changeview.form.submit(name=publish_input_name).follow()
+    changeview = action_form(changeview).submit(name=publish_input_name).follow()
     # not available in django 1.7
     # article.refresh_from_db()
     article = Article.objects.get(pk=article.pk)
-    assert publish_input_name not in dict(changeview.form.fields)
-    assert unpublish_input_name in dict(changeview.form.fields)
+    assert publish_input_name not in dict(action_form(changeview).fields)
+    assert unpublish_input_name in dict(action_form(changeview).fields)
     assert UnPublishActionsMixin.publish.call_count == 1
     assert article.status == Article.PUBLISHED
 
     # execute and test unpublish action
-    changeview = changeview.form.submit(name=unpublish_input_name).follow()
+    changeview = action_form(changeview).submit(name=unpublish_input_name).follow()
     # article.refresh_from_db()
     article = Article.objects.get(pk=article.pk)
-    assert publish_input_name in dict(changeview.form.fields)
-    assert unpublish_input_name not in dict(changeview.form.fields)
+    assert publish_input_name in dict(action_form(changeview).fields)
+    assert unpublish_input_name not in dict(action_form(changeview).fields)
     assert UnPublishActionsMixin.unpublish.call_count == 1
     assert article.status == Article.DRAFT
 
 
-def test_view_action(admin_client, mocker, article):
+def test_view_action(admin_client, mocker, article, action_form):
     """Test view action."""
     from inline_actions.actions import ViewAction
 
@@ -172,13 +135,13 @@ def test_view_action(admin_client, mocker, article):
             article.pk,
         )
     )
-    response = changeview.form.submit(name=input_name).follow()
+    response = action_form(changeview).submit(name=input_name).follow()
     assert ViewAction.view_action.call_count == 1
     article_url = reverse('admin:blog_article_change', args=(article.pk,))
     assert response.request.path == article_url
 
 
-def test_delete_action_without_permission(admin_client, mocker, article):
+def test_delete_action_without_permission(admin_client, mocker, article, action_form):
     """Delete action should not be visible without permission."""
     from ..admin import ArticleInline
 
@@ -194,10 +157,10 @@ def test_delete_action_without_permission(admin_client, mocker, article):
             article.pk,
         )
     )
-    assert input_name not in dict(changeview.form.fields)
+    assert input_name not in dict(action_form(changeview).fields)
 
 
-def test_delete_action(admin_client, mocker, article):
+def test_delete_action(admin_client, mocker, article, action_form):
     """Test delete action."""
     from inline_actions.actions import DeleteAction
 
@@ -214,14 +177,14 @@ def test_delete_action(admin_client, mocker, article):
             article.pk,
         )
     )
-    response = changeview.form.submit(name=input_name).follow()
+    response = action_form(changeview).submit(name=input_name).follow()
     assert DeleteAction.delete_action.call_count == 1
     assert response.request.path == author_url
     with pytest.raises(Article.DoesNotExist):
         Article.objects.get(pk=article.pk)
 
 
-def test_handle_multiple_inlines(admin_client, mocker, article):
+def test_handle_multiple_inlines(admin_client, mocker, article, action_form):
     """
     Test that we can have multiple inlines for the same model.
     """
@@ -240,5 +203,5 @@ def test_handle_multiple_inlines(admin_client, mocker, article):
             article.pk,
         )
     )
-    changeview.form.submit(name=input_name).follow()
+    action_form(changeview).submit(name=input_name).follow()
     assert ArticleNoopInline.noop_action.call_count == 1

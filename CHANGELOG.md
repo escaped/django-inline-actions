@@ -7,9 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* support for Django 4.2 LTS, 5.2 LTS and Django 6.x
+
 ### Changed
 
+* **breaking:** dropped support for Django < 4.2
+* **breaking:** dropped support for Python < 3.10
+* test suite is compatible with the extra logout form rendered by Django >= 4.2
+* modernized packaging and tooling to `uv`, `hatchling` and `ruff`
 * removed RemovedInDjango40Warning warning message, thanks to @Ivan-Feofanov
+
+### Removed
+
+* poetry in favor of uv, including the cruft/cookiecutter auto-update workflow
+* coveralls coverage upload
 
 ## [2.4.0] - 2021-02-08
 

@@ -1,8 +1,7 @@
 # django-inline-actions
 
 ![PyPI](https://img.shields.io/pypi/v/django-inline-actions?style=flat-square)
-![GitHub Workflow Status (master)](https://img.shields.io/github/workflow/status/escaped/django-inline-actions/Test%20&%20Lint/master?style=flat-square)
-![Coveralls github branch](https://img.shields.io/coveralls/github/escaped/django-inline-actions/master?style=flat-square)
+![GitHub Workflow Status (master)](https://github.com/escaped/django-inline-actions/actions/workflows/test.yml/badge.svg?branch=master)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-inline-actions?style=flat-square)
 ![PyPI - License](https://img.shields.io/pypi/l/django-inline-actions?style=flat-square)
 
@@ -10,7 +9,8 @@ django-inline-actions adds actions to each row of the ModelAdmin or InlineModelA
 
 ## Requirements
 
-* Python 3.6.1 or newer
+* Python 3.10 or newer
+* Django 4.2 or newer (4.2 LTS, 5.2 LTS and 6.x are tested in CI)
 
 ## Screenshot
 
@@ -286,17 +286,16 @@ The corresponding action could look like
 ## Example Application
 
 You can see `django-inline-actions` in action using the bundled test application `test_proj`.
-Use [`poetry`](https://poetry.eustace.io/) to run it.
+Use [`uv`](https://docs.astral.sh/uv/) to run it.
 
 ```bash
 git clone https://github.com/escaped/django-inline-actions.git
 cd django-inline-actions/
-poetry install
-poetry run pip install Django
+uv sync
 cd test_proj
-poetry run ./manage.py migrate
-poetry run ./manage.py createsuperuser
-poetry run ./manage.py runserver
+uv run python manage.py migrate
+uv run python manage.py createsuperuser
+uv run python manage.py runserver
 ```
 
 Open [`http://localhost:8000/admin/`](http://localhost:8000/admin/) in your browser and create an author and some articles.
@@ -344,39 +343,32 @@ Example can be found [here](https://github.com/escaped/django-inline-actions/blo
 
 ## Development
 
-This project uses [poetry](https://poetry.eustace.io/) for packaging and
-managing all dependencies and [pre-commit](https://pre-commit.com/) to run
-[flake8](http://flake8.pycqa.org/), [isort](https://pycqa.github.io/isort/),
-[mypy](http://mypy-lang.org/) and [black](https://github.com/python/black).
-
-Additionally, [pdbpp](https://github.com/pdbpp/pdbpp) and [better-exceptions](https://github.com/qix-/better-exceptions) are installed to provide a better debugging experience.
-To enable `better-exceptions` you have to run `export BETTER_EXCEPTIONS=1` in your current session/terminal.
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and managing
+all dependencies, [ruff](https://docs.astral.sh/ruff/) for linting and
+formatting, [mypy](http://mypy-lang.org/) for type checking and
+[pytest](https://docs.pytest.org/) for the test suite.
+[pre-commit](https://pre-commit.com/) runs the linting and type checks on
+every commit.
 
 Clone this repository and run
 
 ```bash
-poetry install
-poetry run pre-commit install
+uv sync
+uv run pre-commit install
 ```
 
-to create a virtual enviroment containing all dependencies.
-Afterwards, You can run the test suite using
+to create a virtual environment containing all dependencies.
+Afterwards, you can run the test suite using
 
 ```bash
-poetry run pytest
+uv run pytest
 ```
+
+`test_proj` contains an end-to-end test matrix that drives the Django admin
+through [django-webtest](https://github.com/django-webtest/django-webtest),
+covering inline actions, model admin actions and intermediate action forms.
+Django 4.2 LTS, 5.2 LTS and the latest release are exercised in CI via the
+matrix in `.github/workflows/test.yml`.
 
 This repository follows the [Conventional Commits](https://www.conventionalcommits.org/)
 style.
-
-### Cookiecutter template
-
-This project was created using [cruft](https://github.com/cruft/cruft) and the
-[cookiecutter-pyproject](https://github.com/escaped/cookiecutter-pypackage) template.
-In order to update this repository to the latest template version run
-
-```sh
-cruft update
-```
-
-in the root of this repository.
