@@ -41,7 +41,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Build a binary wheel and a source tarball
         run: uv build
       - name: Publish distribution to PyPI
