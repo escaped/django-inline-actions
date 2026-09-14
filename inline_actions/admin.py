@@ -78,7 +78,9 @@ class BaseInlineActionsMixin:
             return ''
 
         buttons = []
-        for action_name in self.get_inline_actions(self._request, obj):
+        for action_name in self.get_inline_actions(
+            getattr(self, '_request', None), obj
+        ):
             action_func = getattr(self, action_name, None)
             if not action_func:
                 raise RuntimeError("Could not find action `{}`".format(action_name))
@@ -148,6 +150,22 @@ class InlineActionsMixin(BaseInlineActionsMixin):
             if 'render_inline_actions' not in fields:
                 fields.append('render_inline_actions')
         return fields
+
+    def get_fieldsets(self, request, obj=None):
+        # store `request` for `get_inline_actions`; Django does not call
+        # `get_fields` when `fieldsets` is set
+        self._request = request
+
+        fieldsets = list(super().get_fieldsets(request, obj))
+        if self.fieldsets and self.inline_actions is not None:
+            # `render_inline_actions` is a readonly field and has to be part
+            # of the rendered fieldsets
+            name, options = fieldsets[-1]
+            fields = list(options.get('fields') or ())
+            if 'render_inline_actions' not in fields:
+                fields.append('render_inline_actions')
+                fieldsets[-1] = (name, {**options, 'fields': fields})
+        return fieldsets
 
 
 class InlineActionsModelAdminMixin(BaseInlineActionsMixin):

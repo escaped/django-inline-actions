@@ -207,3 +207,40 @@ def test_handle_multiple_inlines(admin_client, mocker, article, find_action_form
     )
     find_action_form(changeview).submit(name=input_name).follow()
     assert ArticleNoopInline.noop_action.call_count == 1
+
+
+def test_actions_rendered_with_fieldsets(admin_client, article, find_action_form):
+    """Actions must also render when the inline uses `fieldsets` (issue #56)."""
+    from ..admin import ArticleInline
+
+    old_fields, old_fieldsets = ArticleInline.fields, ArticleInline.fieldsets
+    ArticleInline.fields = None
+    ArticleInline.fieldsets = [(None, {'fields': ('title', 'status')})]
+    try:
+        author_url = reverse('admin:blog_author_change', args=(article.author.pk,))
+        changeview = admin_client.get(author_url)
+    finally:
+        ArticleInline.fields, ArticleInline.fieldsets = old_fields, old_fieldsets
+
+    input_name = '_action__articleinline__inline__publish__blog__article__{}'.format(
+        article.pk,
+    )
+    assert input_name in dict(find_action_form(changeview).fields)
+
+
+@pytest.mark.django_db
+def test_render_inline_actions_without_request(article):
+    """`render_inline_actions` is callable without a request (issue #56)."""
+    from django.contrib import admin
+
+    from ..admin import ArticleNoopInline
+
+    inline = ArticleNoopInline(article.author.__class__, admin.site)
+    html = inline.render_inline_actions(article)
+
+    input_name = (
+        '_action__articlenoopinline__inline__noop_action__blog__article__{}'.format(
+            article.pk,
+        )
+    )
+    assert input_name in html
