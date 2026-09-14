@@ -12,7 +12,8 @@ class ViewAction:
     def view_action(self, request, obj, parent_obj=None):
         """Redirect to changeform of selcted inline instance"""
         url = reverse(
-            'admin:{}_{}_change'.format(
+            '{}:{}_{}_change'.format(
+                self.admin_site.name,
                 obj._meta.app_label,
                 obj._meta.model_name,
             ),
