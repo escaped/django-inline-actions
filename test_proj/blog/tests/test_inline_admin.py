@@ -244,3 +244,30 @@ def test_render_inline_actions_without_request(article):
         )
     )
     assert input_name in html
+
+
+def test_action_with_obj_dependent_inline_instances(
+    admin_client, mocker, article, find_action_form
+):
+    """`get_inline_instances` must receive the parent object (issue #47)."""
+    from ..admin import AuthorAdmin
+
+    original = AuthorAdmin.get_inline_instances
+
+    def get_inline_instances(self, request, obj=None):
+        if obj is None:
+            return []
+        return original(self, request, obj)
+
+    mocker.patch.object(AuthorAdmin, 'get_inline_instances', get_inline_instances)
+
+    author_url = reverse('admin:blog_author_change', args=(article.author.pk,))
+    changeview = admin_client.get(author_url)
+
+    input_name = '_action__articleinline__inline__publish__blog__article__{}'.format(
+        article.pk,
+    )
+    find_action_form(changeview).submit(name=input_name).follow()
+
+    article = Article.objects.get(pk=article.pk)
+    assert article.status == Article.PUBLISHED
