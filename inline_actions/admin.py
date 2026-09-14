@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.html import format_html_join
 from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
@@ -114,6 +115,22 @@ class BaseInlineActionsMixin:
                 except AttributeError:
                     css_classes = ''
 
+            # Add per-object html attribute support (e.g. formtarget="_blank").
+            # A dict is escaped; a string is used as-is for backwards
+            # compatibility with `action_func.attribute_properties`.
+            attr_handler = getattr(self, 'get_{}_attr'.format(action_name), None)
+            if callable(attr_handler):
+                attribute_properties = attr_handler(obj=obj)
+            else:
+                try:
+                    attribute_properties = action_func.attribute_properties
+                except AttributeError:
+                    attribute_properties = ''
+            if isinstance(attribute_properties, dict):
+                attribute_properties = format_html_join(
+                    ' ', '{}="{}"', attribute_properties.items()
+                )
+
             # If the form is submitted, we have no information about the
             # requested action.
             # Hence we need all data to be encoded using the action name.
@@ -127,10 +144,11 @@ class BaseInlineActionsMixin:
                 str(obj.pk),
             ]
             buttons.append(
-                '<input type="submit" name="{}" value="{}" class="{}">'.format(
+                '<input type="submit" name="{}" value="{}" class="{}" {}>'.format(
                     '_action__{}'.format('__'.join(action_data)),
                     description,
                     css_classes,
+                    attribute_properties,
                 )
             )
         return mark_safe(

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * support for Django 5.2 LTS, 6.0 and 6.1
+* per-action html attributes via `get_<action>_attr` or `attribute_properties`
 
 ### Changed
 

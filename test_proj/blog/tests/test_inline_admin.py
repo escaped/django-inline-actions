@@ -74,6 +74,25 @@ def test_actions_rendered(admin_client, article, find_action_form, action):
     assert input_name in dict(find_action_form(changeview).fields)
 
 
+def test_action_attr(admin_client, mocker, article):
+    """`get_<action>_attr` may add escaped html attributes to the button."""
+    from ..admin import ArticleInline
+
+    mocker.patch.object(
+        ArticleInline,
+        'get_publish_attr',
+        return_value={'formtarget': '_blank', 'data-x': '"><script>'},
+        create=True,
+    )
+    author = article.author
+
+    url = reverse('admin:blog_author_change', args=(author.pk,))
+    changeview = admin_client.get(url)
+
+    assert 'formtarget="_blank"' in changeview.text
+    assert '&quot;&gt;&lt;script&gt;' in changeview.text
+
+
 def test_publish_action(admin_client, mocker, article, find_action_form):
     """Test dynamically added actions using `get_actions()`"""
     from ..admin import UnPublishActionsMixin
