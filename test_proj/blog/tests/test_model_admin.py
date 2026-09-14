@@ -193,6 +193,25 @@ def test_view_action(admin_client, mocker, article, find_action_form):
     assert response.request.path == article_change_url
 
 
+def test_custom_admin_view_action(admin_client, mocker, article, find_action_form):
+    """View action on a custom AdminSite redirects within that site (issue #49)."""
+    from inline_actions.actions import ViewAction
+
+    mocker.spy(ViewAction, 'view_action')
+
+    article_url = reverse('custom_admin:blog_article_changelist')
+    changelist = admin_client.get(article_url)
+
+    # execute and test view action
+    input_name = '_action__articleadmin__admin__view_action__blog__article__{}'.format(
+        article.pk
+    )
+    response = find_action_form(changelist).submit(name=input_name).follow()
+    assert ViewAction.view_action.call_count == 1
+    article_change_url = reverse('custom_admin:blog_article_change', args=(article.pk,))
+    assert response.request.path == article_change_url
+
+
 def test_action_keeps_query_string(admin_client, article, find_action_form):
     """Redirecting back to the changelist keeps the current query string."""
     changelist_url = reverse('admin:blog_article_changelist')

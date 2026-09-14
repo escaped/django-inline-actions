@@ -22,9 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * reverse url lookup handles custom admin pages (fixed #49)
-
-### Fixed
-
 * inline actions are rendered when the inline admin uses `fieldsets` instead of `fields`
 * `get_inline_instances` receives the parent object when resolving an inline action
 * pressing enter in the admin form saves it instead of triggering the first inline action
