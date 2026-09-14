@@ -198,6 +198,20 @@ def get_toggle_publish_css(self, obj):
 You can make it more eye-candy by using `btn-green` that makes your button green and `btn-red` that makes your button red.
 Or you can use those classes to add some javascript logic (i.e. confirmation box).
 
+Similarly, a `get_ACTIONNAME_attr` method can add extra html attributes to the button, i.e. to open the action in a new browser tab:
+
+```python
+def get_view_attr(self, obj):
+    return {'formtarget': '_blank'}
+```
+
+Dict values are html-escaped. A plain string is used as-is (trusted, like the label and css hooks above), as is a static `attribute_properties` on the action function itself:
+
+```python
+def get_view_attr(self, obj):
+    return 'formtarget="_blank"'
+```
+
 ### Tip on confirmation alerts
 
 When performing a certain critical action or ones which may not be easily reversible it's good to have a confirmation prompt before submitting the action form. To achieve this, one way would be to override `templates/admin/change_list.html` with the following.
