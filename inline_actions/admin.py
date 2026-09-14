@@ -10,7 +10,7 @@ from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
 
-class InlineActionException(Exception):
+class InlineActionException(Exception):  # noqa: N818
     pass
 
 
@@ -128,7 +128,6 @@ class BaseInlineActionsMixin:
         )
 
     render_inline_actions.short_description = _("Actions")  # type: ignore
-    render_inline_actions.allow_tags = True  # type: ignore
 
 
 class InlineActionsMixin(BaseInlineActionsMixin):
@@ -138,7 +137,6 @@ class InlineActionsMixin(BaseInlineActionsMixin):
         return mark_safe('</p>{}<p>'.format(html))
 
     render_inline_actions.short_description = _("Actions")  # type: ignore
-    render_inline_actions.allow_tags = True  # type: ignore
 
     def get_fields(self, request, obj=None):
         # store `request` for `get_inline_actions`
