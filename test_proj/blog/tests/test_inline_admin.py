@@ -271,3 +271,18 @@ def test_action_with_obj_dependent_inline_instances(
 
     article = Article.objects.get(pk=article.pk)
     assert article.status == Article.PUBLISHED
+
+
+def test_first_submit_button_is_save(admin_client, article):
+    """
+    Implicit form submission (pressing enter) must save the form instead of
+    triggering the first inline action (issue #44).
+    """
+    author_url = reverse('admin:blog_author_change', args=(article.author.pk,))
+    changeview = admin_client.get(author_url)
+
+    form = changeview.lxml.xpath('.//form[.//input[starts-with(@name, "_action__")]]')[
+        0
+    ]
+    submit_buttons = form.xpath('.//input[@type="submit"]')
+    assert submit_buttons[0].get('name') == '_save'

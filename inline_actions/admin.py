@@ -78,6 +78,14 @@ class BaseInlineActionsMixin:
             return ''
 
         buttons = []
+
+        # Implicit form submission (pressing enter) uses the first submit
+        # button of a form. Insert a hidden save button before the actions so
+        # entering text does not trigger an action. On the changelist the
+        # action "Run" button still comes first, so this stays inert there.
+        # https://html.spec.whatwg.org/#implicit-submission
+        buttons.append('<input type="submit" name="_save" value="" hidden>')
+
         for action_name in self.get_inline_actions(
             getattr(self, '_request', None), obj
         ):
